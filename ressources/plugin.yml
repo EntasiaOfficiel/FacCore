@@ -1,0 +1,38 @@
+name: SkyCore
+depend: [Libraries]
+loadbefore: [Multiverse-Core] # il a besoin de charger le VoidGenerator
+version: '-1'
+main: fr.entasia.skycore.Main
+api-version: '1.15'
+commands:
+  skycore:
+
+  setspawn:
+
+  masteredit:
+    aliases: [buildtoggle]
+
+  isadmin:
+    aliases: [adminis]
+
+
+  bin:
+    aliases: [corbeille, poubelle, trash, binaries]
+
+  spawn:
+
+  is:
+    aliases: [island, islands, ile, iles]
+
+  rank:
+
+
+  money:
+    aliases: [monnaie, bal, balance]
+
+  eco:
+    aliases: [economy, economie]
+
+  baltop:
+
+  pay:
