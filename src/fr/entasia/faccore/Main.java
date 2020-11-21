@@ -34,6 +34,7 @@ public class Main extends JavaPlugin {
 
 	public static Main main;
 	public static boolean dev;
+	public static Random r = new Random();
 
 	public static SQLConnection sql;
 	public static SQLConnection sqlite;

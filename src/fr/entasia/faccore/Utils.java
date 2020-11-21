@@ -17,7 +17,7 @@ public class Utils {
 
 	public static ArrayList<Player> masterEditors = new ArrayList<>();
 
-	public static ArrayList<Faction> islandCache = new ArrayList<>();
+	public static ArrayList<Faction> factionCache = new ArrayList<>();
 	public static ArrayList<FacPlayer> playerCache = new ArrayList<>();
 
 

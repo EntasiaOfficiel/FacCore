@@ -17,7 +17,7 @@ public class RankTask extends BukkitRunnable {
 
 		for (RankEntry rankEntry : list) {
 			check:
-			for (Faction is : Utils.islandCache) {
+			for (Faction is : Utils.factionCache) {
 				if (rankEntry.lvl < is.getLevel()) {
 					for (RankEntry is2 : list) {
 						if (is2.is == is) continue check;

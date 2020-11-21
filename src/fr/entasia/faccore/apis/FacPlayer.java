@@ -1,10 +1,10 @@
 package fr.entasia.faccore.apis;
 
 import fr.entasia.faccore.Main;
-import fr.entasia.faccore.apis.mini.Dimensions;
+import fr.entasia.faccore.objs.FacException;
 import org.bukkit.entity.Player;
 
-import javax.annotation.Nullable;
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -14,7 +14,8 @@ public class FacPlayer {
 	public final String name;
 	public Player p;
 
-	protected Faction fac;
+	protected Faction faction;
+	protected MemberRank rank;
 	protected long money;
 
 	// online stuff
@@ -58,14 +59,23 @@ public class FacPlayer {
 
 	@Override
 	public String toString() {
-		return "SkyPlayer["+name+"]";
+		return "FacPlayer["+name+"]";
 	}
 
 
 	// FONCTIONS RANDOM
 
 	public Faction getFaction() {
-		return fac;
+		return faction;
+	}
+
+	public MemberRank getRank(){
+		return rank;
+	}
+	public void setRank(MemberRank rank){
+		if(rank==MemberRank.CHEF)throw new FacException("Can't set owner with this method");
+		this.rank = rank;
+		Main.sql.fastUpdate("UPDATE fac_players SET rank=? WHERE uuid=?", uuid);
 	}
 
 
@@ -76,7 +86,7 @@ public class FacPlayer {
 	public boolean setMoney(long m){
 		if(m<0) return false;
 		money=m;
-		if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE sky_players SET money=? WHERE uuid=?", money, uuid);
+		Main.sql.fastUpdate("UPDATE fac_players SET money=? WHERE uuid=?", money, uuid);
 		return true;
 	}
 

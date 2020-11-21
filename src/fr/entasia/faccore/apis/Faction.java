@@ -26,6 +26,7 @@ import java.util.*;
 
 public class Faction {
 
+	protected int id;
 	protected String name=null;
 	protected Location home;
 	protected FacPlayer owner;
@@ -40,27 +41,22 @@ public class Faction {
 
 	// CONSTRUCTEURS
 
-	public Faction(){
+	public Faction(FacPlayer fp){
+		fp.faction = this;
+		owner = fp;
+		fp.rank = MemberRank.CHEF;
+		members.add(fp);
 	}
 
 
 	// FONCTIONS A AVOIR
 
-
-	public boolean equals(Faction is){
-		return is.facID.equals(facID);
-	}
-
-	public boolean equals(FacID facID){
-		return this.facID.equals(facID);
-	}
-
 	public String toString(){
-		return "BaseIsland["+ facID.str()+"]";
+		return "Faction["+id+"]";
 	}
 
 	public int hashCode(){
-		return facID.hashCode();
+		return id;
 	}
 
 
@@ -75,7 +71,7 @@ public class Faction {
 		if(name.length()>20)return false;
 		this.name = name;
 		setHoloName();
-		if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE sky_islands SET name=? WHERE x=? and z=?", name, facID.x, facID.z);
+		Main.sql.fastUpdate("UPDATE factions SET name=? WHERE faction=?", name, id);
 		return true;
 	}
 
@@ -93,10 +89,8 @@ public class Faction {
 
 	public void setHome(Location home){
 		this.home = home;
-		if(InternalAPI.SQLEnabled()){
-			Main.sql.fastUpdate("UPDATE sky_islands SET home_w=?, home_x=?, home_y=?, home_z=? where x =? and z=?",
-					Dimensions.getDimension(home.getWorld()).id, home.getBlockX(), home.getBlockY(), home.getBlockZ(), facID.x, facID.z);
-		}
+			Main.sql.fastUpdate("UPDATE factions SET home_w=?, home_x=?, home_y=?, home_z=? where faction=?",
+					Dimensions.getDimension(home.getWorld()).id, home.getBlockX(), home.getBlockY(), home.getBlockZ(), id);
 	}
 
 
@@ -107,31 +101,37 @@ public class Faction {
 
 	private static final Comparator<FacPlayer> memberComparator = Comparator.comparingInt(o -> o.getRank().id);
 
-	public ArrayList<ISPLink> getSortedMembers(){
-		ArrayList<ISPLink> a = getMembers();
+	public ArrayList<FacPlayer> getSortedMembers(){
+		ArrayList<FacPlayer> a = getMembers();
 		a.sort(memberComparator);
 		Collections.reverse(a);
 		return a;
 	}
 
-	public ISPLink getMember(UUID uuid){
-		for(ISPLink link : members){
-			if(link.getRank()!=MemberRank.DEFAULT&&link.sp.uuid.equals(uuid))return link;
+	public FacPlayer getMember(UUID uuid){
+		for(FacPlayer fp : members){
+			if(fp.getRank()!=MemberRank.DEFAULT&&fp.uuid==uuid)return fac;
 		}
 		return null;
 	}
 
-	public ISPLink addMember(FacPlayer sp){
-		ISPLink link = getMember(sp.uuid);
-		if(link==null){
-			if(isBanned(sp))return null;
-			link = new ISPLink(this, sp, MemberRank.RECRUE);
-			members.add(link);
-			sp.islands.add(link);
-			if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("INSERT INTO sky_pis (rank, x, z, uuid) VALUES (?, ?, ?, ?)", MemberRank.RECRUE.id, facID.x, facID.z, sp.uuid);
-			return link;
-		}else InternalAPI.warn("Le joueur est déja sur l'île !", true);
-		return null;
+	/*
+	if(fp.faction!=null)return false;
+
+		fp.faction = fac;
+		fp.rank = rank;
+		fac.members.add(fp);
+
+
+	 */
+
+	public boolean addMember(FacPlayer fp) {
+		if (fp.faction != null) return false;
+		if (getMember(fp.uuid) != null) return false;
+		members.add(fp);
+		fp.faction = this;
+		Main.sql.fastUpdate("UPDATE fac_players SET faction=?, rank=? WHERE uuid=?", MemberRank.RECRUE.id, id, MemberRank.RECRUE.id, fp.uuid);
+		return true;
 	}
 
 //	public boolean reRankMember(ISPLink link, MemberRank rank){
@@ -241,7 +241,7 @@ public class Faction {
 
 	public void setExtension(byte extension){
 		this.extension = extension;
-		if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE sky_islands SET extension=? WHERE x=? and z=?", extension, facID.x, facID.z);
+		if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE factions SET extension=? WHERE x=? and z=?", extension, facID.x, facID.z);
 	}
 
 
@@ -261,7 +261,7 @@ public class Faction {
 		if(m<0)return false;
 		bank = m;
 		setHoloBank();
-		if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE sky_islands SET bank=? WHERE x=? and z=?", m, facID.x, facID.z);
+		if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE factions SET bank=? WHERE x=? and z=?", m, facID.x, facID.z);
 		return true;
 
 	}

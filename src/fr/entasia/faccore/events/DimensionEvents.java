@@ -34,7 +34,7 @@ public class DimensionEvents implements Listener {
 		Location loc2 = loc.clone().add(0, 1, 0);
 		Faction is = BaseAPI.getIsland(loc);
 		if(is!=null){
-			ISPLink link = is.getMember(e.getPlayer().getUniqueId());
+			FacPlayer link = is.getMember(e.getPlayer().getUniqueId());
 			if(link!=null){
 				if (loc.getWorld()== Dimensions.OVERWORLD.world) {
 					if (loc.getBlock().getType() == Material.NETHER_PORTAL||loc2.getBlock().getType()==Material.NETHER_PORTAL){ // TP NETHER

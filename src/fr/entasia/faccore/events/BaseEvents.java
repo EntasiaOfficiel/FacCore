@@ -39,7 +39,7 @@ public class BaseEvents implements Listener {
 					Bukkit.broadcastMessage("§6Bienvenue à §e" + e.getPlayer().getDisplayName() + "§6 sur le Skyblock ! Souhaitons-lui la bienvenue !");
 				}
 				sp.p = e.getPlayer();
-				for(ISPLink link : sp.getIslands()){
+				for(FacPlayer link : sp.getIslands()){
 					link.is.tryLoad();
 				}
 
@@ -50,7 +50,7 @@ public class BaseEvents implements Listener {
 					sp.p.sendMessage("§cNON, ce n'est pas quelque chose de normal sur un serveur accessibles aux joueurs ! Préviens iTrooz_ si c'est le cas");
 				}
 
-				ISPLink link = sp.referentIsland(false);
+				FacPlayer link = sp.referentIsland(false);
 				if(link==null)sp.p.teleport(Utils.spawn);
 				else link.is.teleportHome(sp.p);
 

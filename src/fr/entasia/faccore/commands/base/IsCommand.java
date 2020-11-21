@@ -33,7 +33,7 @@ public class IsCommand implements CommandExecutor {
 		if (args.length == 0) {
 			if (sp.getIslands().size()==0) IsMenus.startIslandChooseOpen(sp);
 			else {
-				ISPLink link = IsCmdUtils.isCheck(sp);
+				FacPlayer link = IsCmdUtils.isCheck(sp);
 				if (link != null) IsMenus.baseIslandOpen(link);
 			}
 			return true;
@@ -69,7 +69,7 @@ public class IsCommand implements CommandExecutor {
 				}
 
 				ArrayList<FacPlayer> l2=null;
-				for(ISPLink ll : sp.getIslands()){
+				for(FacPlayer ll : sp.getIslands()){
 					l2 = ll.is.getInvites();
 					if(l2.size()!=0){
 						if(ll.is.getName()==null) p.sendMessage("§e- §aîle "+ll.is.facID.str());
@@ -129,7 +129,7 @@ public class IsCommand implements CommandExecutor {
 				break;
 			}
 			default:{
-				ISPLink link = IsCmdUtils.isCheck(sp);
+				FacPlayer link = IsCmdUtils.isCheck(sp);
 				if(link==null)return true;
 
 				switch (args[0]) {
@@ -141,11 +141,11 @@ public class IsCommand implements CommandExecutor {
 								int index = Integer.parseInt(args[1]);
 								if (index <= 0) p.sendMessage("§cCe numéro d'île est invalide ! (0/Négatif)");
 								else {
-									ArrayList<ISPLink> list = link.sp.getIslands();
+									ArrayList<FacPlayer> list = link.sp.getIslands();
 									if (list.size() < index)
 										p.sendMessage("§cAucune île ne correspond à ce numéro d'île !");
 									else {
-										ISPLink newLink = list.get(index - 1);
+										FacPlayer newLink = list.get(index - 1);
 										newLink.is.teleportHome(p);
 										p.sendMessage("§6Tu as été téléporté à ton île n° " + index + " !");
 									}
@@ -268,7 +268,7 @@ public class IsCommand implements CommandExecutor {
 					case "uninvite": {
 						FacPlayer target = IsCmdUtils.teamCheck(link, args);
 						if (target == null) return true;
-						ISPLink targetLink = link.is.getMember(target.uuid);
+						FacPlayer targetLink = link.is.getMember(target.uuid);
 						if (args[0].equals("invite")) {
 							if (targetLink == null) {
 								if (link.is.isBanned(target)) {
@@ -301,7 +301,7 @@ public class IsCommand implements CommandExecutor {
 					case "promote": {
 						FacPlayer target = IsCmdUtils.teamCheck(link, args);
 						if (target == null) return true;
-						ISPLink targetLink = link.is.getMember(target.uuid);
+						FacPlayer targetLink = link.is.getMember(target.uuid);
 						if (targetLink == null) {
 							p.sendMessage("§cCe joueur n'est pas membre sur cette île !");
 							return true;
@@ -360,8 +360,8 @@ public class IsCommand implements CommandExecutor {
 						else {
 							FacPlayer target = InternalAPI.getArgSP(sender, args[1], false);
 							if (target == null) return true;
-							ArrayList<ISPLink> list = target.getIslands();
-							ISPLink targetLink;
+							ArrayList<FacPlayer> list = target.getIslands();
+							FacPlayer targetLink;
 							if (list.size() == 0) {
 								p.sendMessage("§cCe joueur n'a aucune île !");
 								return true;
@@ -454,7 +454,7 @@ public class IsCommand implements CommandExecutor {
 							}
 							FacPlayer target = InternalAPI.getArgSP(link.sp.p, args[1], true);
 							if (target == null) return true;
-							ISPLink newLink = target.getIsland(is.facID);
+							FacPlayer newLink = target.getIsland(is.facID);
 							if (newLink == null) {
 								p.sendMessage("§cCe joueur n'est plus membre sur cette île !");
 							} else {
@@ -519,7 +519,7 @@ public class IsCommand implements CommandExecutor {
 							confirmDelete.remove(p);
 							if (co.is.facID.equals(is.facID)) {
 								p.sendMessage("§cSuppression de l'île " + is.facID.x + ";" + is.facID.z + " en cours...");
-								BaseAPI.deleteIsland(is, new CodePasser.Arg<Boolean>() {
+								BaseAPI.deleteFaction(is, new CodePasser.Arg<Boolean>() {
 									@Override
 									public void run(Boolean err) {
 										if (err) p.sendMessage("§cîle supprimée avec succès !");

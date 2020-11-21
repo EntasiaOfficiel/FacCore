@@ -12,7 +12,7 @@ public class ChatEvents implements Listener {
 	public void onChat(AsyncPlayerChatEvent e){
 		FacPlayer sp  = BaseAPI.getOnlineFP(e.getPlayer());
 		assert sp != null;
-		ISPLink link = sp.referentIsland(false);
+		FacPlayer link = sp.referentIsland(false);
 		if(link!=null){
 			if(sp.islandChat){
 				e.setCancelled(true);

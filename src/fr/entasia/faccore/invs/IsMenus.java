@@ -108,7 +108,7 @@ public class IsMenus {
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
 			A a = ((A)e.data); // laisse
-			ISPLink chosen = a.tracker.get(e.slot);
+			FacPlayer chosen = a.tracker.get(e.slot);
 			if(chosen==null)e.player.sendMessage("§cUne erreur est survenue lors du choix de l'île !");
 			else{
 				if(!a.force&&e.click==MenuClickEvent.ClickType.LEFT){
@@ -123,7 +123,7 @@ public class IsMenus {
 	};
 
 	private static class A{
-		public HashMap<Integer, ISPLink> tracker = new HashMap<>();
+		public HashMap<Integer, FacPlayer> tracker = new HashMap<>();
 		public boolean force;
 	}
 
@@ -140,7 +140,7 @@ public class IsMenus {
 
 		int j = 10;
 		ArrayList<String> list;
-		for(ISPLink link : sp.getIslands()){
+		for(FacPlayer link : sp.getIslands()){
 			ItemStack item = new ItemStack(Material.OAK_SAPLING);
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName("§aIle ");
@@ -172,7 +172,7 @@ public class IsMenus {
 
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
-			ISPLink link  = (ISPLink)e.data;
+			FacPlayer link  = (FacPlayer)e.data;
 			e.player.closeInventory();
 			switch(e.item.getType()){
 				case PLAYER_HEAD:{
@@ -196,7 +196,7 @@ public class IsMenus {
 	};
 
 
-	public static void baseIslandOpen(ISPLink link) {
+	public static void baseIslandOpen(FacPlayer link) {
 
 		Inventory inv = baseIslandMenu.createInv(5, "§6Menu principal de l'île :", link);
 
@@ -219,7 +219,7 @@ public class IsMenus {
 		if(link.is.getName()!=null)a.add("§eNom : "+link.is.getName());
 		a.add("§eNiveau : §6" + link.is.getLevel());
 		a.add("§eBanque d'île : §6" + Utils.formatMoney(link.is.getBank()));
-		ArrayList<ISPLink> members = link.is.getMembers();
+		ArrayList<FacPlayer> members = link.is.getMembers();
 		if(members.size()==1)a.add("§eAucune équipe !");
 		else a.add("§eÉquipe : §6"+members.size()+"§e membres");
 		a.add("§eRôle : §6"+TextUtils.firstLetterUpper(link.getRank().name));
@@ -263,16 +263,16 @@ public class IsMenus {
 
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
-			ISPLink link = (ISPLink)e.data;
+			FacPlayer link = (FacPlayer)e.data;
 			if(e.item.getType()==Material.WRITABLE_BOOK) baseIslandOpen(link);
 		}
 	};
 
-	public static void manageTeamOpen(ISPLink link){
+	public static void manageTeamOpen(FacPlayer link){
 		Inventory inv = manageTeamMenu.createInv(3, "§6Ton équipe :", link);
 
 		int i = 0;
-		for(ISPLink ll : link.is.getSortedMembers()){
+		for(FacPlayer ll : link.is.getSortedMembers()){
 
 			ItemStack item = new ItemStack(Material.PLAYER_HEAD);
 			SkullMeta smeta = (SkullMeta) item.getItemMeta();
@@ -294,7 +294,7 @@ public class IsMenus {
 
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
-			ISPLink link = (ISPLink)e.data;
+			FacPlayer link = (FacPlayer)e.data;
 			if(e.item.getType()==Material.WRITABLE_BOOK) baseIslandOpen(link);
 			else{
 				e.player.closeInventory();
@@ -329,7 +329,7 @@ public class IsMenus {
 		}
 	};
 
-	public static void upgradeOpen(ISPLink link){
+	public static void upgradeOpen(FacPlayer link){
 		Inventory inv = upgradeMenu.createInv(4, "§6Amélioration de l'île :", link);
 
 

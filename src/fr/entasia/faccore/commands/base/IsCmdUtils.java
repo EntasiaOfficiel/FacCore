@@ -67,7 +67,7 @@ public class IsCmdUtils {
 	protected static HashMap<Player, ConfirmObj> confirmDelete = new HashMap<>();
 	protected static HashMap<Player, ConfirmObj> confirmPassOwner = new HashMap<>();
 
-	protected static FacPlayer teamCheck(ISPLink link, String[] args){
+	protected static FacPlayer teamCheck(FacPlayer link, String[] args){
 		if (link.getRank().id < MemberRank.ADJOINT.id) link.sp.p.sendMessage("§cTu dois être au minimum adjoint pour gérer l'équipe de cette île !");
 		else {
 			if (args.length < 2) link.sp.p.sendMessage("§cMet un joueur en argument !");
@@ -83,12 +83,12 @@ public class IsCmdUtils {
 	}
 
 
-	protected static ISPLink isCheck(FacPlayer sp){
+	protected static FacPlayer isCheck(FacPlayer sp){
 		if (sp.getIslands().size()==0){
 			IsMenus.startIslandChooseOpen(sp);
 		}
 		else {
-			ISPLink link = sp.referentIsland(true);
+			FacPlayer link = sp.referentIsland(true);
 			if (link == null){
 				sp.p.sendMessage("§cTu dois d'abord choisir une île préférée pouvoir choisir ces options ! (On ne sait pas de laquelle tu parles !)");
 				IsMenus.islandsListOpen(sp, true);

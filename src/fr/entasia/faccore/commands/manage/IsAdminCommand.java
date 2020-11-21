@@ -63,7 +63,7 @@ public class IsAdminCommand implements CommandExecutor {
 							if(target==null)return true;
 							p.sendMessage("§8Joueur : §b" + target.name);
 							p.sendMessage("§8îles :");
-							for(ISPLink ll : target.getIslands()){
+							for(FacPlayer ll : target.getIslands()){
 								p.sendMessage("§8- île §b"+ll.is.facID.str()+" §8(§b"+ll.getRank().getName()+"§8)");
 							}
 							p.sendMessage("§7Monnaie : §b" + target.getMoney());
@@ -100,11 +100,11 @@ public class IsAdminCommand implements CommandExecutor {
 							else {
 								p.sendMessage("§8Global");
 								p.sendMessage("§7ID : §b"+ facID.str());
-								ISPLink link = is.getOwner();
+								FacPlayer link = is.getOwner();
 								p.sendMessage("§7Owner UUID : §b"+link.sp.uuid);
 								if(link.sp.p!=null)p.sendMessage("§7Owner Name : §b"+link.sp.p.getName());
 								p.sendMessage("§7Membres :");
-								for(ISPLink ll : link.is.getSortedMembers()){
+								for(FacPlayer ll : link.is.getSortedMembers()){
 									p.sendMessage("§8- §b"+ll.getName());
 								}
 								p.sendMessage("§7Points purs : §b" + is.getRawpoints());
@@ -145,7 +145,7 @@ public class IsAdminCommand implements CommandExecutor {
 								Faction is = BaseAPI.getIsland(facID);
 								if (is == null) p.sendMessage("§cIle non existante !");
 								else {
-									BaseAPI.deleteIsland(is, new CodePasser.Arg<Boolean>() {
+									BaseAPI.deleteFaction(is, new CodePasser.Arg<Boolean>() {
 										@Override
 										public void run(Boolean err) {
 											if(err)p.sendMessage("§cUne erreur s'est produite lors de la suppression de l'île !");
@@ -192,7 +192,7 @@ public class IsAdminCommand implements CommandExecutor {
 							else{
 								FacPlayer target = InternalAPI.getArgSP(sender, args[2], false);
 								if(target!=null){
-									ISPLink targetLink = target.getIsland(is.facID);
+									FacPlayer targetLink = target.getIsland(is.facID);
 									switch(args[0]){
 										case "join":{
 											if(targetLink==null){

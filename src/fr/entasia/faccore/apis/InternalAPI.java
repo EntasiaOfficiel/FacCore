@@ -19,10 +19,6 @@ public class InternalAPI {
 	public static byte postenable=0;
 	public static boolean enableIGSQL=true;
 
-
-	public static boolean SQLEnabled(){
-		return InternalAPI.postenable==2&&InternalAPI.enableIGSQL&&Main.sql !=null;
-	}
 	public static boolean isFullyEnabled(){
 		return InternalAPI.postenable==2;
 	}
@@ -53,7 +49,6 @@ public class InternalAPI {
 
 				if(Main.sql!=null) loadData();
 
-				new AutoMinerTask().runTaskTimerAsynchronously(Main.main, 0, 20*6); // full cycle
 				new RankTask().runTaskTimerAsynchronously(Main.main, 0, 20*60*5); // full cycle
 
 				postenable=2;
@@ -73,9 +68,9 @@ public class InternalAPI {
 
 		Faction is = null;
 		FacPlayer sp = null;
-		ISPLink link;
+		FacPlayer link;
 
-		ResultSet rs = Main.sql.fastSelectUnsafe("SELECT * FROM sky_islands");
+		ResultSet rs = Main.sql.fastSelectUnsafe("SELECT * FROM factions");
 		while(rs.next()){ // BASEISLAND
 			is = new Faction(new FacID(rs.getInt("x"), rs.getInt("z")), IslandType.getType(rs.getInt("type")));
 
@@ -87,7 +82,7 @@ public class InternalAPI {
 
 			if(rs.getByte("hasNether")==1)is.hasNether = true;
 			if(rs.getByte("hasEnd")==1)is.hasEnd = true;
-			Utils.islandCache.add(is);
+			Utils.factionCache.add(is);
 		}
 
 		rs = Main.sql.connection.prepareStatement("SELECT global.name, sky_players.* from sky_players INNER JOIN global ON sky_players.uuid = global.uuid").executeQuery();
@@ -104,7 +99,7 @@ public class InternalAPI {
 		else{
 			rs = Main.sql.connection.prepareStatement("SELECT * FROM sky_pis").executeQuery();
 			FacID facID;
-			while(rs.next()){ // ISPLINK
+			while(rs.next()){ // FacPlayer
 				i++;
 				facID = new FacID(rs.getInt("x"), rs.getInt("z"));
 				rID = rs.getInt("rank");
@@ -133,7 +128,7 @@ public class InternalAPI {
 
 				if(rID==0)is.banneds.add(sp);
 				else{
-					link = new ISPLink(is, sp, MemberRank.getType(rID));
+					link = new FacPlayer(is, sp, MemberRank.getType(rID));
 					is.members.add(link);
 					sp.islands.add(link);
 					if(link.rank==MemberRank.CHEF){
@@ -150,7 +145,7 @@ public class InternalAPI {
 			}
 		}
 		Main.main.getLogger().info("Données chargées en "+(System.currentTimeMillis()-time)+"ms :");
-		Main.main.getLogger().info(Utils.islandCache.size()+" iles");
+		Main.main.getLogger().info(Utils.factionCache.size()+" iles");
 		Main.main.getLogger().info(Utils.playerCache.size()+" joueurs");
 		Main.main.getLogger().info(i+" liens");
 
@@ -164,11 +159,11 @@ public class InternalAPI {
 			if(d==Dimensions.NETHER){
 				TerrainManager.genNether(is.facID);
 				is.hasNether = true;
-				if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE sky_islands SET hasNether=1 WHERE x=? and z=?", is.facID.x, is.facID.z);
+				if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE factions SET hasNether=1 WHERE x=? and z=?", is.facID.x, is.facID.z);
 			}else if(d==Dimensions.END){
 				TerrainManager.genEnd(is.facID);
 				is.hasEnd = true;
-				if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE sky_islands SET hasEnd=1 WHERE x=? and z=?", is.facID.x, is.facID.z);
+				if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE factions SET hasEnd=1 WHERE x=? and z=?", is.facID.x, is.facID.z);
 			}else{
 				InternalAPI.warn("Activation d'une dimension invalide : "+d, true);
 			}

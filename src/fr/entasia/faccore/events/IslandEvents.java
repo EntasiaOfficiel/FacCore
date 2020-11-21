@@ -104,7 +104,7 @@ public class IslandEvents implements Listener {
 		if(Dimensions.isGameWorld(p.getWorld())) {
 			Faction is = BaseAPI.getIsland(b.getLocation());
 			if (is != null) {
-				ISPLink link = is.getMember(p.getUniqueId());
+				FacPlayer link = is.getMember(p.getUniqueId());
 				if (link == null) p.sendMessage("§cTu n'est pas membre de cette ile !");
 				else {
 					if (is.hasDimension(Dimensions.getDimension(p.getWorld()))) {
