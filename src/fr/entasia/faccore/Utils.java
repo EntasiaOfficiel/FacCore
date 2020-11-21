@@ -1,7 +1,7 @@
 package fr.entasia.faccore;
 
-import fr.entasia.faccore.apis.Faction;
 import fr.entasia.faccore.apis.FacPlayer;
+import fr.entasia.faccore.apis.Faction;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -19,6 +19,7 @@ public class Utils {
 
 	public static ArrayList<Faction> factionCache = new ArrayList<>();
 	public static ArrayList<FacPlayer> playerCache = new ArrayList<>();
+	public static ArrayList<FacPlayer> claimsCache = new ArrayList<>();
 
 
 	public static String formatMoney(long money){

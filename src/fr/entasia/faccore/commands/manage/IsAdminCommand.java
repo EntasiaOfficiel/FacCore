@@ -2,8 +2,7 @@ package fr.entasia.faccore.commands.manage;
 
 import fr.entasia.apis.other.CodePasser;
 import fr.entasia.faccore.apis.*;
-import fr.entasia.faccore.apis.mini.Dimensions;
-import fr.entasia.faccore.apis.MemberRank;
+import fr.entasia.faccore.apis.Dimensions;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

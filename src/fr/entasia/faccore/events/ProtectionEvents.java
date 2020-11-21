@@ -1,11 +1,7 @@
 package fr.entasia.faccore.events;
 
 import fr.entasia.faccore.Utils;
-import fr.entasia.faccore.apis.BaseAPI;
-import fr.entasia.faccore.apis.Faction;
-import fr.entasia.faccore.apis.OthersAPI;
-import fr.entasia.faccore.apis.mini.Dimensions;
-import fr.entasia.faccore.apis.MemberRank;
+import fr.entasia.faccore.apis.*;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -30,9 +26,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class IslandEvents implements Listener {
+public class ProtectionEvents implements Listener { // TODO A RVOIR TOTALEMENT
 
-	private static final Set<Material> containers = EnumSet.of(
+	private static final Set<Material> containers = EnumSet.of( // Openable ou Container
 			Material.CHEST,
 			Material.TRAPPED_CHEST,
 
@@ -102,16 +98,16 @@ public class IslandEvents implements Listener {
 	private static boolean isBlockDenied(Player p, Block b){
 		if(Utils.masterEditors.contains(p)&&p.getGameMode()==GameMode.CREATIVE)return false;
 		if(Dimensions.isGameWorld(p.getWorld())) {
-			Faction is = BaseAPI.getIsland(b.getLocation());
-			if (is != null) {
-				FacPlayer link = is.getMember(p.getUniqueId());
-				if (link == null) p.sendMessage("§cTu n'est pas membre de cette ile !");
+			Faction fac = BaseAPI.getIsland(b.getLocation());
+			if (fac != null) {
+				FacPlayer fp = fac.getMember(p.getUniqueId());
+				if (fp == null) p.sendMessage("§cTu n'est pas membre de cette ile !");
 				else {
-					if (is.hasDimension(Dimensions.getDimension(p.getWorld()))) {
-						int m = is.facID.distanceFromIS(b.getLocation());
-						if ((is.getExtension() + 1) * 50 < m) {
+					if (fac.hasDimension(Dimensions.getDimension(p.getWorld()))) {
+						int m = fac.facID.distanceFromIS(b.getLocation());
+						if ((fac.getExtension() + 1) * 50 < m) {
 							p.sendMessage("§cL'extension de ton ile n'est pas suffisante !");
-						} else if (link.getRank() == MemberRank.RECRUE && containers.contains(b.getType())) {
+						} else if (fp.getRank() == MemberRank.RECRUE && containers.contains(b.getType())) {
 							p.sendMessage("§cTu es seulement une recrue sur cette ile ! Tu ne peux pas intéragir avec les containers");
 						} else return false;
 					} else p.sendMessage("§Ton île n'a pas encore débloqué cette dimension ! Utilise un portail pour la débloquer");

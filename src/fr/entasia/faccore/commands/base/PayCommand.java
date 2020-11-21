@@ -2,8 +2,8 @@ package fr.entasia.faccore.commands.base;
 
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.BaseAPI;
-import fr.entasia.faccore.apis.InternalAPI;
 import fr.entasia.faccore.apis.FacPlayer;
+import fr.entasia.faccore.apis.InternalAPI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

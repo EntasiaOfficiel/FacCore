@@ -18,12 +18,12 @@ public class RankTask extends BukkitRunnable {
 		for (RankEntry rankEntry : list) {
 			check:
 			for (Faction is : Utils.factionCache) {
-				if (rankEntry.lvl < is.getLevel()) {
+				if (rankEntry.bank < is.getBank()) {
 					for (RankEntry is2 : list) {
 						if (is2.is == is) continue check;
 					}
 					rankEntry.is = is;
-					rankEntry.lvl = is.getLevel();
+					rankEntry.bank = is.getBank();
 				}
 			}
 		}
@@ -32,7 +32,7 @@ public class RankTask extends BukkitRunnable {
 
 	public static class RankEntry{
 		public Faction is;
-		public int lvl;
+		public long bank;
 
 	}
 }

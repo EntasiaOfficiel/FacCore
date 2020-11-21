@@ -1,17 +1,13 @@
 package fr.entasia.faccore.apis;
 
-import fr.entasia.apis.other.CodePasser;
 import fr.entasia.apis.utils.ServerUtils;
 import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
-import fr.entasia.faccore.apis.mini.Dimensions;
 import fr.entasia.faccore.objs.FacException;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -45,7 +41,7 @@ public class BaseAPI {
 		else return getOnlineFP(p);
 	}
 	public static FacPlayer getOnlineFP(Player p){ // TODO FAIRE METADATA
-		List<MetadataValue> meta = p.getMetadata("SkyPlayer");
+		List<MetadataValue> meta = p.getMetadata("FacPlayer");
 		if(meta.size()==0)return null;
 		else return (FacPlayer) meta.get(0).value();
 	}

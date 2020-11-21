@@ -4,7 +4,6 @@ import fr.entasia.faccore.Main;
 import fr.entasia.faccore.objs.FacException;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -81,6 +80,10 @@ public class FacPlayer {
 
 	// FONCTIONS RANDOM
 
+
+	public boolean hasFaction() {
+		return faction!=null;
+	}
 
 	public Faction getFaction() {
 		return faction;

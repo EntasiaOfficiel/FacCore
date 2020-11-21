@@ -2,27 +2,19 @@ package fr.entasia.faccore.apis;
 
 
 import fr.entasia.apis.other.ChatComponent;
-import fr.entasia.apis.other.CodePasser;
-import fr.entasia.apis.utils.Serialization;
-import fr.entasia.apis.utils.TextUtils;
 import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
-import fr.entasia.faccore.apis.mini.Dimensions;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.UUID;
 
 public class Faction {
 
@@ -112,7 +104,7 @@ public class Faction {
 
 	public FacPlayer getMember(UUID uuid){
 		for(FacPlayer fp : members){
-			if(fp.getRank()!=MemberRank.DEFAULT&&fp.uuid==uuid)return fac;
+			if(fp.getRank()!=MemberRank.DEFAULT&&fp.uuid==uuid)return fp;
 		}
 		return null;
 	}
@@ -194,56 +186,16 @@ public class Faction {
 	}
 
 	public void sendTeamMsg(BaseComponent... msg){
-		for(ISPLink link : members){
-			if(link.sp.p!=null){
-				link.sp.p.sendMessage(msg);
+		for(FacPlayer fp : members){
+			if(fp.p!=null){
+				fp.p.sendMessage(msg);
 			}
 		}
 	}
 
 
-	public ISPLink getOwner(){
+	public FacPlayer getOwner(){
 		return owner;
-	}
-
-
-	public ArrayList<FacPlayer> getBanneds(){
-		return new ArrayList<>(banneds);
-	}
-
-	public boolean addBanned(FacPlayer sp){
-		if(banneds.contains(sp))return false;
-		banneds.add(sp);
-		ISPLink link = getMember(sp.uuid);
-		if(link==null){
-			if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("INSERT INTO sky_pis (rank, x, z, uuid) VALUES (?, ?, ?, ?)", 0, facID.x, facID.z, sp.uuid);
-		}else{
-			link.removeMember();
-			if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE sky_pis SET rank=? where x=? and z=? and uuid=?)", 0, facID.x, facID.z, sp.uuid);
-		}
-		return true;
-	}
-
-	public boolean removeBanned(FacPlayer sp){
-		if(banneds.contains(sp)){
-			this.banneds.remove(sp);
-			if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("DELETE FROM sky_pis WHERE x=? and z=? and uuid=?", facID.x, facID.z, sp.uuid);
-			return true;
-		}else return false;
-	}
-
-	public boolean isBanned(FacPlayer sp){
-		return this.banneds.contains(sp);
-	}
-
-
-	public byte getExtension(){
-		return extension;
-	}
-
-	public void setExtension(byte extension){
-		this.extension = extension;
-		if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE factions SET extension=? WHERE x=? and z=?", extension, facID.x, facID.z);
 	}
 
 
@@ -263,7 +215,7 @@ public class Faction {
 		if(m<0)return false;
 		bank = m;
 		setHoloBank();
-		if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE factions SET bank=? WHERE x=? and z=?", m, facID.x, facID.z);
+		Main.sql.fastUpdate("UPDATE factions SET bank=? WHERE id=?", m, id);
 		return true;
 
 	}
@@ -271,8 +223,9 @@ public class Faction {
 	protected void delHolos(){
 		for(Entity ent : home.clone().add(0, 3, 0).getNearbyEntities(1, 4, 1)){
 			if(ent instanceof ArmorStand){
-				if(!ent.getScoreboardTags().contains("isholo"))return;
-				ent.remove();
+				if(ent.getScoreboardTags().contains("isholo")){
+					ent.remove();
+				}
 			}
 		}
 	}
@@ -280,27 +233,24 @@ public class Faction {
 	public void trySetHolos(){
 		if(holo==null){
 			delHolos();
-			holo = new ArmorStand[4];
-			if(name!=null)setHoloName();
-			setHoloLevel();
+			holo = new ArmorStand[2];
+			setHoloName();
 			setHoloBank();
-			if(holo[3]==null) holo[3] = createAM(3);
-			holo[3].setCustomName("§eID : §6"+ facID.str());
 
 		}
 	}
 
 	protected void setHoloName(){
 		if(holo[0]==null) holo[0] = createAM(0);
-		holo[0].setCustomName("§a"+name);
+		String n;
+		if(name==null)n = "§2Faction de §a"+owner.name;
+		else n = "§a"+name;
+		holo[0].setCustomName(n);
 	}
-	protected void setHoloLevel(){
-		if(holo[1]==null) holo[1] = createAM(1);
-		holo[1].setCustomName("§eNiveau de l'île : §6"+level);
-	}
+
 	protected void setHoloBank(){
-		if(holo[2]==null) holo[2] = createAM(2);
-		holo[2].setCustomName("§eBanque : §6"+ Utils.formatMoney(bank));
+		if(holo[1]==null) holo[1] = createAM(1);
+		holo[1].setCustomName("§eBanque : §6"+ Utils.formatMoney(bank));
 	}
 
 	private ArmorStand createAM(int n){
@@ -313,57 +263,5 @@ public class Faction {
 		temp.addScoreboardTag("isholo");
 		return temp;
 	}
-
-
-
-	public void tryLoad(){
-		if(!loaded){
-			loaded = true;
-			autominers = Collections.synchronizedList(new ArrayList<>());
-
-			try{
-				ResultSet rs = Main.sqlite.fastSelectUnsafe("SELECT * FROM autominers WHERE is_x=? and is_z=? ", facID.x, facID.z);
-				Block b;
-				World w;
-				ItemStack item;
-				while(rs.next()){
-					item = Serialization.deserialiseItem(rs.getString("item"));
-					w = Bukkit.getWorld(rs.getString("world"));
-					if(w!=null){
-						b = w.getBlockAt(rs.getInt("x"), rs.getInt("y"), rs.getInt("z"));
-						if(b.getType()!=Material.AIR){
-							AutoMiner am = new AutoMiner();
-							int i = 0;
-							for(Entity ent : b.getLocation().add(AutoMiner.normaliser).getNearbyEntitiesByType(ArmorStand.class, 0.4)){
-								if("AMPickaxe".equals(ent.getCustomName())){
-									if(i==4){
-										i = 5;
-										break;
-									}
-									am.armorStands[i] = (ArmorStand) ent;
-									i++;
-								}
-							}
-							if(i==4) {
-								am.init(this, b, item);
-								am.deleteAM();
-								am.spawn();
-								continue;
-							}
-						}
-						AutoMiner.deleteAMByBlock(b);
-						w.dropItem(b.getLocation(), item);
-					}
-					Main.sqlite.fastUpdate("DELETE FROM autominers WHERE x=? and y=? and z=?", rs.getInt("x"), rs.getInt("y"), rs.getInt("z"));
-
-				}
-			}catch(SQLException e){
-				e.printStackTrace();
-				Main.sqlite.broadcastError();
-				InternalAPI.warn("Erreur lors du chargement des autominers de l'île "+ facID.str()+" !", false);
-			}
-		}
-	}
-
 
 }

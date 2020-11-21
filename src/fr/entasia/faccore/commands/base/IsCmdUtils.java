@@ -2,9 +2,9 @@ package fr.entasia.faccore.commands.base;
 
 import fr.entasia.apis.other.ChatComponent;
 import fr.entasia.faccore.Main;
+import fr.entasia.faccore.apis.FacPlayer;
 import fr.entasia.faccore.apis.Faction;
 import fr.entasia.faccore.apis.InternalAPI;
-import fr.entasia.faccore.apis.FacPlayer;
 import fr.entasia.faccore.apis.MemberRank;
 import fr.entasia.faccore.invs.IsMenus;
 import net.md_5.bungee.api.chat.ClickEvent;

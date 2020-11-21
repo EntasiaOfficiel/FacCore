@@ -4,7 +4,7 @@ import fr.entasia.apis.utils.PlayerUtils;
 import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.*;
-import fr.entasia.faccore.apis.mini.Dimensions;
+import fr.entasia.faccore.apis.Dimensions;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Creature;
@@ -33,26 +33,16 @@ public class BaseEvents implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		if(InternalAPI.isFullyEnabled()){
 			try{
-				FacPlayer sp = BaseAPI.getFacPlayer(e.getPlayer().getUniqueId());
-				if (sp==null) {
-					sp = BaseAPI.registerFacPlayer(e.getPlayer());
-					Bukkit.broadcastMessage("§6Bienvenue à §e" + e.getPlayer().getDisplayName() + "§6 sur le Skyblock ! Souhaitons-lui la bienvenue !");
+				FacPlayer fp = BaseAPI.getFacPlayer(e.getPlayer().getUniqueId());
+				if (fp==null) {
+					fp = BaseAPI.registerFacPlayer(e.getPlayer());
+					Bukkit.broadcastMessage("§3Bienvenue à §7" + e.getPlayer().getDisplayName() + "§63sur le Factions ! Souhaitons-lui la bienvenue !");
 				}
-				sp.p = e.getPlayer();
-				for(FacPlayer link : sp.getIslands()){
-					link.is.tryLoad();
-				}
+				fp.p = e.getPlayer();
+				fp.p.setMetadata("FacPlayer", new FixedMetadataValue(Main.main, fp));
 
-				sp.p.setMetadata("SkyPlayer", new FixedMetadataValue(Main.main, sp));
-
-				if(!InternalAPI.enableIGSQL&&sp.p.hasPermission("errorlog")){
-					sp.p.sendMessage("§cATTENTION : Les sauvegardes SQL sont désactivées ! Fait §4/isadmin sql enable§C pour les activer");
-					sp.p.sendMessage("§cNON, ce n'est pas quelque chose de normal sur un serveur accessibles aux joueurs ! Préviens iTrooz_ si c'est le cas");
-				}
-
-				FacPlayer link = sp.referentIsland(false);
-				if(link==null)sp.p.teleport(Utils.spawn);
-				else link.is.teleportHome(sp.p);
+				if(fp.hasFaction()&&fp.getFaction().getHome()!=null)fp.p.teleport(fp.getFaction().getHome());
+				else fp.p.teleport(Utils.spawn);
 
 			}catch(Exception e2){
 				e2.printStackTrace();
@@ -91,9 +81,8 @@ public class BaseEvents implements Listener {
 			Player p = (Player) e.getEntity();
 			if (e.getCause() == EntityDamageEvent.DamageCause.VOID){
 				e.setCancelled(true);
-				Faction is = BaseAPI.getIsland(p.getLocation());
-				if(is==null)p.teleport(Utils.spawn);
-				else is.teleportHome(p);
+				p.teleport(Utils.spawn);
+				p.sendMessage("§cTu y as échappé belle... ne refait pas ca s'il te plait");
 			}else if (e.getCause() == EntityDamageEvent.DamageCause.FALL) e.setDamage(e.getDamage() / 2);
 		}else if(e.getEntity() instanceof Snowman){
 			if(e.getCause()==EntityDamageEvent.DamageCause.MELTING){
@@ -117,12 +106,13 @@ public class BaseEvents implements Listener {
 				assert sp != null;
 
 				Location loc = Utils.spawn;
-				if (Dimensions.isGameWorld(p.getWorld())) {
-					Faction is = BaseAPI.getIsland(p.getLocation());
-					if (is != null) loc = is.getHome();
-				}
+				// TODO CHECK S'IL EST SUR UN CLAIM DE SA FAC POUR LE TP AU HOME
+//				if (Dimensions.isGameWorld(p.getWorld())) {
+//					Faction is = BaseAPI.getFaction(p.getLocation());
+//					if (is != null) loc = is.getHome();
+//				}
 
-				PlayerUtils.fakeKill(p);
+				PlayerUtils.reset(p);
 				p.setNoDamageTicks(80); // c'est pas des ticks
 				p.teleport(loc);
 
@@ -145,13 +135,13 @@ public class BaseEvents implements Listener {
 	@EventHandler
 	public void initEvent(WorldInitEvent e){
 		switch(e.getWorld().getName().toLowerCase()){
-			case "iles":
+			case "factions":
 				Dimensions.OVERWORLD.world = e.getWorld();
 				break;
-			case "iles_nether":
+			case "factions_nether":
 				Dimensions.NETHER.world = e.getWorld();
 				break;
-			case "iles_the_end":
+			case "factions_the_end":
 				Dimensions.END.world = e.getWorld();
 				break;
 			default:

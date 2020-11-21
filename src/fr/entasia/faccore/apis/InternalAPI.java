@@ -5,7 +5,6 @@ import fr.entasia.apis.utils.ServerUtils;
 import fr.entasia.errors.EntasiaException;
 import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
-import fr.entasia.faccore.apis.mini.Dimensions;
 import fr.entasia.faccore.objs.tasks.RankTask;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -17,7 +16,6 @@ import java.util.UUID;
 public class InternalAPI {
 
 	public static byte postenable=0;
-	public static boolean enableIGSQL=true;
 
 	public static boolean isFullyEnabled(){
 		return InternalAPI.postenable==2;

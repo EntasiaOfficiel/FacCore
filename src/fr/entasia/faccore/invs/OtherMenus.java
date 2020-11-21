@@ -23,10 +23,10 @@ public class OtherMenus {
 		SlotEntry se;
 		for(int i=0;i<entries.length;i++){
 			re = RankTask.list[i];
-			if(re.is==null||re.lvl<=0)break;
+			if(re.is==null||re.bank <=0)break;
 			se = entries[i];
 			item = new ItemBuilder(Material.PLAYER_HEAD).damage(3).name(se.color+"Top "+(i+1)).lore(re.is.getName(), "§aNiveau : "+
-					re.lvl, "§cChef §6: "+re.is.getOwner().sp.name).build();
+					re.bank, "§cChef §6: "+re.is.getOwner().sp.name).build();
 			ItemUtils.placeSkullAsync(inv, se.slot, item, re.is.getOwner().sp.name);
 		}
 

@@ -1,4 +1,4 @@
-package fr.entasia.faccore.apis.mini;
+package fr.entasia.faccore.apis;
 
 import org.bukkit.World;
 
@@ -6,7 +6,6 @@ public enum Dimensions {
 	OVERWORLD(0),
 	NETHER(1),
 	END(2);
-//	CLOUDS(3);
 
 	public int id;
 	public World world;
