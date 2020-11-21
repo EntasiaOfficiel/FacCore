@@ -21,15 +21,20 @@ import static fr.entasia.faccore.Utils.playerCache;
 
 public class BaseAPI {
 
-	// BORDEL
-
 
 	// GET
 
 
+	public static Faction getFaction(int id) {
+		for(Faction lf : Utils.factionCache){
+			if(lf.id==id)return lf;
+		}
+		return null;
+	}
+
 	public static Faction getFaction(UUID owner) {
-		for(Faction bis : Utils.factionCache){
-			if(bis.owner.uuid==owner)return bis;
+		for(Faction lf : Utils.factionCache){
+			if(lf.owner.uuid==owner)return lf;
 		}
 		return null;
 	}

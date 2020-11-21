@@ -63,10 +63,10 @@ public class FacPlayer {
 	}
 
 
-	// FONCTIONS RANDOM
+	// FONCTIONS LIEES AU RANK
 
-	public Faction getFaction() {
-		return faction;
+	public String getName(){
+		return rank.getName()+" "+name;
 	}
 
 	public MemberRank getRank(){
@@ -76,6 +76,14 @@ public class FacPlayer {
 		if(rank==MemberRank.CHEF)throw new FacException("Can't set owner with this method");
 		this.rank = rank;
 		Main.sql.fastUpdate("UPDATE fac_players SET rank=? WHERE uuid=?", uuid);
+	}
+
+
+	// FONCTIONS RANDOM
+
+
+	public Faction getFaction() {
+		return faction;
 	}
 
 

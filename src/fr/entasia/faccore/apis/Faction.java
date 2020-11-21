@@ -41,6 +41,8 @@ public class Faction {
 
 	// CONSTRUCTEURS
 
+	public Faction() { }
+
 	public Faction(FacPlayer fp){
 		fp.faction = this;
 		owner = fp;
@@ -179,12 +181,12 @@ public class Faction {
 	private static final BaseComponent[] b1 = ChatComponent.create("§3Is-Chat§b>> ");
 	private static final BaseComponent[] b2 = ChatComponent.create(" §8| §7");
 
-	public void islandChat(ISPLink link, String msg){
-		islandChat(link, ChatComponent.create(msg));
+	public void islandChat(FacPlayer fp, String msg){
+		islandChat(fp, ChatComponent.create(msg));
 	}
 
-	public void islandChat(ISPLink link, BaseComponent... msg){
-		sendTeamMsg(new ChatComponent().append(b1).append(link.getName()).append(b2).append(msg).create());
+	public void islandChat(FacPlayer fp, BaseComponent... msg){
+		sendTeamMsg(new ChatComponent().append(b1).append(fp.getName()).append(b2).append(msg).create());
 	}
 
 	public void sendTeamMsg(String msg){

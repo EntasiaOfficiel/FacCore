@@ -66,115 +66,69 @@ public class InternalAPI {
 		long time = System.currentTimeMillis();
 
 
-		Faction is = null;
-		FacPlayer sp = null;
+		Faction fac = null;
+		FacPlayer fp = null;
 		FacPlayer link;
 
 		ResultSet rs = Main.sql.fastSelectUnsafe("SELECT * FROM factions");
 		while(rs.next()){ // BASEISLAND
-			is = new Faction(new FacID(rs.getInt("x"), rs.getInt("z")), IslandType.getType(rs.getInt("type")));
+			fac = new Faction();
+			fac.id = rs.getInt("id");
 
-			is.name = rs.getString("name");
-			is.bank = rs.getLong("bank");
-			is.extension = rs.getByte("extension");
-			is.malus = rs.getInt("malus");
-			is.level = rs.getInt("lvl");
+			fac.name = rs.getString("name");
+			fac.bank = rs.getLong("bank");
 
-			if(rs.getByte("hasNether")==1)is.hasNether = true;
-			if(rs.getByte("hasEnd")==1)is.hasEnd = true;
-			Utils.factionCache.add(is);
+			Utils.factionCache.add(fac);
 		}
 
 		rs = Main.sql.connection.prepareStatement("SELECT global.name, sky_players.* from sky_players INNER JOIN global ON sky_players.uuid = global.uuid").executeQuery();
-		while(rs.next()){ // SKYPLAYER
-			sp = new FacPlayer(UUID.fromString(rs.getString("uuid")), rs.getString("name"));
-			sp.money = rs.getLong("money");
-			sp.lastGenerated = rs.getInt("lastgen");
-			Utils.playerCache.add(sp);
-		}
-		int i = 0;
-		int rID;
-		if(is==null) a("Aucune ile en mémoire !");
-		else if(sp==null) a("Aucun joueur en mémoire !");
-		else{
-			rs = Main.sql.connection.prepareStatement("SELECT * FROM sky_pis").executeQuery();
-			FacID facID;
-			while(rs.next()){ // FacPlayer
-				i++;
-				facID = new FacID(rs.getInt("x"), rs.getInt("z"));
-				rID = rs.getInt("rank");
-
-				assert is != null; // tkt
-				if(!is.facID.equals(facID))is = BaseAPI.getIsland(facID);
-
-				if(is==null){
-					Main.main.getLogger().severe("Tentative de récupération du lien d'une île non existante !");
-					Main.main.getLogger().severe("UUID="+rs.getString("uuid"));
-					Main.main.getLogger().severe("ISID="+ facID);
-					Main.main.getLogger().severe("RANK="+rID);
-					continue;
-				}
+		int facID;
+		while(rs.next()){ // FACPLAYER
+			fp = new FacPlayer(UUID.fromString(rs.getString("uuid")), rs.getString("name"));
+			fp.money = rs.getLong("money");
 
 
-				sp = BaseAPI.getFacPlayer(UUID.fromString(rs.getString("uuid")));
-				if(sp==null){
-					Main.main.getLogger().severe("Tentative de récupération du lien d'un joueur non existant !");
-					Main.main.getLogger().severe("UUID="+rs.getString("uuid"));
-					Main.main.getLogger().severe("ISID="+ facID);
-					Main.main.getLogger().severe("RANK="+rID);
-					continue;
-				}
+			facID = rs.getInt("faction");
+			fp.rank = MemberRank.getType(rs.getInt("rank"));
 
+			assert fac != null; // tkt
+			if(fac.id!=facID)fac = BaseAPI.getFaction(facID);
 
-				if(rID==0)is.banneds.add(sp);
-				else{
-					link = new FacPlayer(is, sp, MemberRank.getType(rID));
-					is.members.add(link);
-					sp.islands.add(link);
-					if(link.rank==MemberRank.CHEF){
-						is.owner = link;
-						sp.ownerIsland = link;
-					}
-				}
-				if(rs.getByte("def")==1){
-					if(sp.getDefaultIS()!=null){
-						Main.main.getLogger().warning("Redéfinition de île par défaut pour "+sp.name+" !");
-					}
-					sp.setDefaultIS(facID);
-				}
+			if(fac==null){
+				Main.main.getLogger().severe("Tentative de récupération d'une île non existante ! (par membre)");
+				Main.main.getLogger().severe("UUID="+rs.getString("uuid"));
+				Main.main.getLogger().severe("ISID="+ facID);
+				Main.main.getLogger().severe("RANK="+fp.rank);
+				continue;
 			}
+
+
+			fp = BaseAPI.getFacPlayer(UUID.fromString(rs.getString("uuid")));
+			if(fp==null){
+				Main.main.getLogger().severe("Tentative de récupération d'un joueur non existant !");
+				Main.main.getLogger().severe("UUID="+rs.getString("uuid"));
+				Main.main.getLogger().severe("ISID="+ facID);
+				Main.main.getLogger().severe("RANK="+fp.rank);
+				continue;
+			}
+
+
+			fac.members.add(fp);
+			fp.faction = fac;
+			if(fp.rank==MemberRank.CHEF) {
+				fac.owner = fp;
+			}
+
+			Utils.playerCache.add(fp);
+
+
 		}
+
 		Main.main.getLogger().info("Données chargées en "+(System.currentTimeMillis()-time)+"ms :");
-		Main.main.getLogger().info(Utils.factionCache.size()+" iles");
+		Main.main.getLogger().info(Utils.factionCache.size()+" factions");
 		Main.main.getLogger().info(Utils.playerCache.size()+" joueurs");
-		Main.main.getLogger().info(i+" liens");
 
 	}
-
-
-
-	public static boolean allowDimension(Faction is, Dimensions d) {
-		ServerUtils.wantChildThread();
-		try{
-			if(d==Dimensions.NETHER){
-				TerrainManager.genNether(is.facID);
-				is.hasNether = true;
-				if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE factions SET hasNether=1 WHERE x=? and z=?", is.facID.x, is.facID.z);
-			}else if(d==Dimensions.END){
-				TerrainManager.genEnd(is.facID);
-				is.hasEnd = true;
-				if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE factions SET hasEnd=1 WHERE x=? and z=?", is.facID.x, is.facID.z);
-			}else{
-				InternalAPI.warn("Activation d'une dimension invalide : "+d, true);
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-			InternalAPI.warn("Erreur d'activation de dimension "+d+" ! "+is.facID, false);
-			return false;
-		}
-		return true;
-	}
-
 
 
 
