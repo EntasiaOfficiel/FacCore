@@ -20,7 +20,6 @@ public class Faction {
 	protected Location home;
 	protected FacPlayer owner;
 	protected ArrayList<FacPlayer> members = new ArrayList<>();
-	protected ArrayList<FacPlayer> invites = new ArrayList<>();
 	protected ArrayList<ChunkID> chunks = new ArrayList<>();
 	protected HashMap<Faction, FactionRelation> sideRelations = new HashMap<>();
 
@@ -30,6 +29,7 @@ public class Faction {
 	protected long bank=0;
 
 	// online stuff
+	public ArrayList<FacPlayer> invites = new ArrayList<>();
 	protected ArmorStand[] holo;
 
 
@@ -66,6 +66,11 @@ public class Faction {
 
 	// FONCTIONS RANDOM
 
+
+	public String getGenName(){
+		if(name==null)return "§2Faction de §a"+owner.name;
+		else return "§a"+name;
+	}
 
 	public String getName(){
 		return name;
@@ -126,33 +131,6 @@ public class Faction {
 		fp.faction = this;
 		Main.sql.fastUpdate("UPDATE fac_players SET faction=?, rank=? WHERE uuid=?", MemberRank.RECRUE.id, id, MemberRank.RECRUE.id, fp.uuid);
 		return true;
-	}
-
-
-	public ArrayList<FacPlayer> getInvites(){
-		return new ArrayList<>(invites);
-	}
-
-	public boolean invitePlayer(FacPlayer sp){
-		if(isInvited(sp))return false;
-		else{
-			invites.add(sp);
-			sp.invites.add(this);
-			if(sp.p!=null)sp.p.sendMessage();
-			return true;
-		}
-	}
-
-	public boolean isInvited(FacPlayer sp){
-		for(FacPlayer lsp : invites){
-			if(lsp.equals(sp))return true;
-		}
-		return false;
-	}
-
-	public boolean cancelInvite(FacPlayer sp){
-		sp.invites.remove(this);
-		return invites.remove(sp);
 	}
 
 

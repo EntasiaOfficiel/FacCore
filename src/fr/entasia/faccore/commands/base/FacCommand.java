@@ -8,6 +8,7 @@ import fr.entasia.faccore.invs.FacMenus;
 import fr.entasia.faccore.invs.OtherMenus;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,7 +17,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static fr.entasia.faccore.commands.base.IsCmdUtils.*;
+import static fr.entasia.faccore.commands.base.FCmdUtils.*;
 
 public class FacCommand implements CommandExecutor {
 
@@ -35,10 +36,8 @@ public class FacCommand implements CommandExecutor {
 
 		args[0] = args[0].toLowerCase();
 		switch (args[0]) {
-			case "create":{
-				if(fp.hasFaction()){
-					p.sendMessage("§cTu as déja une faction !");
-				}else{
+			case "create": {
+				if (fp.getFaction()==null) {
 					try {
 						BaseAPI.registerFaction(fp);
 						p.sendMessage("§cTu as créé ta faction ! Bonne chance, Chef");
@@ -46,133 +45,181 @@ public class FacCommand implements CommandExecutor {
 						e.printStackTrace();
 						p.sendMessage("§cUne erreur est survenue durant la création de ta faction ! Contacte un Membre du Staff");
 					}
+				} else {
+					p.sendMessage("§cTu as déja une faction !");
 				}
 				return true;
 			}
-			case "list":{
+			case "list": {
 				FacMenus.baseIslandOpen(fp);
 				break;
 			}
-			case "tp":{
+			case "tp": {
 				OtherMenus.topRankOpen(p);
 				break;
 			}
 
-			case "invites":{
-				ArrayList<Faction> l1 = fp.();
-				if(l1.size()!=0){
-					p.sendMessage("§aTes invitations : ");
-					for(Faction is : l1){
-						if(is.getName()==null) p.sendMessage("§e- §aFaction "+is.facID.str()+" (Chef : "+is.getOwner().sp.name+")");
-						else p.sendMessage("§e- §aîle "+is.getName()+" (ID:"+is.facID.str()+") (Chef : "+is.getOwner().sp.name+")");
-						sendInviteMsg(p, is);
-						p.sendMessage(" ");
-					}
-					p.sendMessage(" ");
-				}
-
-				ArrayList<FacPlayer> l2=null;
-				for(FacPlayer ll : fp.getFaction()){
-					l2 = ll.is.getInvites();
-					if(l2.size()!=0){
-						if(ll.is.getName()==null) p.sendMessage("§e- §aîle "+ll.is.facID.str());
-						else p.sendMessage("§e- §aîle "+ll.is.getName()+" (ID:"+ll.is.facID.str()+")");
-						ChatComponent uninvite = new ChatComponent("§4[§cAnnuler§4]");
-						uninvite.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponent.create("§cClique pour annuler l'invitation !")));
-						for(FacPlayer lsp : l2){
-							uninvite.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/is uninvite "+lsp.uuid));
-							sender.sendMessage(ChatComponent.create(new ChatComponent("§e- §2"+lsp.name+"  "), uninvite));
+			case "invites": {
+				if (fp.getFaction() == null) {
+					if (fp.invites.size() == 0) {
+						p.sendMessage("§cTu n'as aucune invitation !");
+					} else {
+						p.sendMessage("§aTes invitations : ");
+						for (Faction fac : fp.invites) {
+							p.sendMessage("§e- §aFaction " + fac.getGenName() + " (Chef : " + fac.getOwner().name + ")");
+							sendInviteMsg(p, fac);
 							p.sendMessage(" ");
 						}
 						p.sendMessage(" ");
 					}
+				} else {
+					if (fp.getFaction().invites.size() == 0) {
+						p.sendMessage("§cTu n'as aucune invitation à gérer !");
+					} else {
+						p.sendMessage("§aInvitations de la Faction : ");
+
+						ChatComponent uninvite = new ChatComponent("§4[§cAnnuler§4]");
+						uninvite.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§cClique pour annuler l'invitation !")));
+
+						ChatComponent cc;
+						for (FacPlayer lfp : fp.getFaction().invites) {
+							uninvite.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/is uninvite " + lfp.uuid));
+							cc = new ChatComponent("§e- §2" + lfp.name + "  ");
+							if (fp.getRank().id >= MemberRank.ADJOINT.id) cc.append(uninvite);
+
+							p.sendMessage(cc.create());
+						}
+						p.sendMessage(" ");
+					}
 				}
-				if(l1.size()==0&&l2==null)p.sendMessage("§cTu n'as aucune invitation à gérer !");
 				break;
 			}
 
 			case "accept": {
-				if (args.length == 1) p.sendMessage("§cMet un ID d'île !");
+				if (fp.getFaction() != null) {
+					p.sendMessage("§cTu es déja dans une faction !");
+					return true;
+				}
+				if (args.length == 1) p.sendMessage("§cMet le chef de la faction en argument !");
 				else {
-					FacID facID = FacID.parse(args[1]);
-					if (facID == null) p.sendMessage("§cID d'île invalide !");
-					else {
-						ArrayList<Faction> list = fp.getInvites();
-						for (Faction is : list) {
-							if (is.facID.equals(facID)) {
-								if (is.cancelInvite(fp) && is.addMember(fp) != null) {
-									p.sendMessage("§aInvitation acceptée ! Bienvenue, §dRecrue§a !");
-									is.teleportHome(p);
-								} else p.sendMessage("§cUne erreur s'est produite lors de l'acceptation de l'invitation !");
-								return true;
+					Faction fac = null;
+					try {
+						int id = Integer.parseInt(args[1]);
+						for (Faction lf : fp.invites) {
+							if (lf.id == id) {
+								fac = lf;
+								break;
 							}
 						}
-						p.sendMessage("§cTu n'as pas recu d'invitation de la part de cette île !");
+						if (fac == null) {
+							p.sendMessage("§cCette faction a annulé son invitation !");
+							return true;
+						}
+					} catch (NumberFormatException e) {
+						args[0] = args[0].toLowerCase();
+						for (Faction lf : fp.invites) {
+							if (lf.getOwner().name.toLowerCase().equals(args[0])) {
+								fac = lf;
+								break;
+							}
+						}
+						if (fac == null) {
+							p.sendMessage("§cCe chef de faction ne t'a pas envoyé d'invitation !");
+							return true;
+						}
 					}
+					if (fac.invites.remove(fp) && fac.addMember(fp)) {
+						fp.invites.clear();
+						p.sendMessage("§aInvitation acceptée ! Bienvenue, §dRecrue§a !");
+						fac.teleportHome(p);
+					} else p.sendMessage("§cUne erreur s'est produite lors de l'acceptation de l'invitation !");
+					return true;
 				}
 				break;
 			}
 
 			case "deny":{
-				if(args.length==1)p.sendMessage("§cMet un ID d'île !");
-				else{
-					FacID facID = FacID.parse(args[1]);
-					if(facID ==null)p.sendMessage("§cID d'île invalide !");
-					else{
-						Faction is = fp.getInvite(facID);
-						if(is==null) p.sendMessage("§cTu n'as pas recu d'invitation de la part de cette île !");
-						else{
-							if(is.cancelInvite(fp)){
-								p.sendMessage("§cTu as refusé l'invitation de l'île "+is.facID.str()+" !");
-								is.sendTeamMsg("§3"+fp.p.getDisplayName()+" §cà refusé l'invitation !");
-							}else p.sendMessage("§cUne erreur s'est produite lors du refus de l'invitation !");
+				if (args.length == 1) p.sendMessage("§cMet le chef de la faction en argument !");
+				else {
+					Faction fac = null;
+					try {
+						int id = Integer.parseInt(args[1]);
+						for (Faction lf : fp.invites) {
+							if (lf.id == id) {
+								fac = lf;
+								break;
+							}
+						}
+						if (fac == null) {
+							p.sendMessage("§cCette faction a annulé son invitation !");
+							return true;
+						}
+					} catch (NumberFormatException e) {
+						args[0] = args[0].toLowerCase();
+						for (Faction lf : fp.invites) {
+							if (lf.getOwner().name.toLowerCase().equals(args[0])) {
+								fac = lf;
+								break;
+							}
+						}
+						if (fac == null) {
+							p.sendMessage("§cCe chef de faction ne t'a pas envoyé d'invitation !");
+							return true;
 						}
 					}
+					p.sendMessage("§cTu as refusé l'invitation de la faction "+fac.getGenName()+" !");
+					fac.sendTeamMsg("§3"+fp.p.getDisplayName()+" §cà refusé l'invitation !");
+					if (fac.invites.remove(fp) && fac.addMember(fp)) {
+						fp.invites.clear();
+						p.sendMessage("§aInvitation acceptée ! Bienvenue, §dRecrue§a !");
+						fac.teleportHome(p);
+					} else p.sendMessage("§cUne erreur s'est produite lors de l'acceptation de l'invitation !");
+					return true;
 				}
 				break;
 			}
 			default:{
-				FacPlayer link = IsCmdUtils.isCheck(fp);
-				if(link==null)return true;
+				Faction fac = fp.getFaction();
+				if(fac==null)return true;
 
-				switch (args[0]) {
+				switch (args[0]) { // DANS TOUTES CES OPTIONS IL A UNE FACTION
 					case "go":
 					case "h":
 					case "home":
-						if(fp.hasFaction()) {
+						if (fp.getFaction()==null) {
+							p.sendMessage("§cTu n'a pas de faction !");
+						} else {
 							if (fp.getFaction().getHome() == null) {
-								p.sendMessage("§cTu n'as pas d");
+								p.sendMessage("§cTu n'as pas de home !");
 							} else {
 								fp.getFaction().teleportHome(fp.p);
 							}
-						}else {
-							p.sendMessage();
 						}
 						break;
-					}
+
 					case "team": {
-						FacMenus.manageTeamOpen(link);
+						FacMenus.manageTeamOpen(fac);
 						break;
 					}
 					case "sethome": {
-						if (link.getRank() == MemberRank.RECRUE)
-							p.sendMessage("§cTu es une recrue, tu ne peux pas redéfinir le spawn de l'île !");
+						if (fac.getRank() == MemberRank.RECRUE)
+							p.sendMessage("§cTu es une recrue, tu ne peux pas redéfinir le spawn de la faction !");
 						else {
-							link.is.setHome(p.getLocation());
-							p.sendMessage("§aLe spawn de l'île à été redéfini avec succès !");
+							fac.getFaction().setHome(p.getLocation());
+							p.sendMessage("§aLe spawn de la faction à été redéfini avec succès !");
 						}
 						break;
 					}
 
 					case "setname": {
-						if (link.getRank() == MemberRank.RECRUE)
+						if (fac.getRank() == MemberRank.RECRUE)
 							p.sendMessage("§cTu es une recrue, tu ne peux pas changer le nom de l'île !");
 						if (args.length == 1) {
 							p.sendMessage("§cMet un nom d'île !");
 							return true;
 						}
 						String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-						if (link.is.setName(name)) p.sendMessage("§aNouveau nom d'île : §d" + name);
+						if (fac.is.setName(name)) p.sendMessage("§aNouveau nom d'île : §d" + name);
 						else
 							p.sendMessage("§cCe nom est trop grand ! Maximum : 20 caractères (" + name.length() + " actuellement)");
 						break;
@@ -181,130 +228,87 @@ public class FacCommand implements CommandExecutor {
 					case "c":
 					case "chat": {
 						if (args.length == 1) {
-							if (link.sp.islandChat) {
-								link.sp.islandChat = false;
+							if (fac.getFaction().islandChat(fp);) {
+								fac.sp.islandChat = false;
 								p.sendMessage("§cChat d'île désactivé !");
 							} else {
-								link.sp.islandChat = true;
+								fac.sp.islandChat = true;
 								p.sendMessage("§aChat d'île activé !");
 							}
 						} else {
-							link.is.islandChat(link, String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+							fac.is.islandChat(fac, String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
 						}
 						break;
 					}
 
 					case "calc":
 					case "level":
-					case "lvl": {
-						link.is.recalcLvl(p);
-						break;
-					}
-
 					case "leave":
 					case "quit": {
-						if (link.getRank() == MemberRank.CHEF) {
+						if (fac.getRank() == MemberRank.CHEF) {
 							p.sendMessage("§cTu es le chef de cette île, tu ne peux pas la quitter !");
 							p.sendMessage("§cUtilise /is setowner pour transférer la propriété de l'île");
 						} else {
-							String name = link.getName();
-							if (link.removeMember()) {
-								link.is.sendTeamMsg(name + "§e à quitté l'île !");
+							String name = fac.getName();
+							if (fac.) {
+								fac.is.sendTeamMsg(name + "§e à quitté l'île !");
 								p.sendMessage("§cTu as quitté l'île !");
 							} else p.sendMessage("§cUne erreur s'est produite !");
 							break;
 						}
 					}
 
-					case "bans": {
-						ArrayList<FacPlayer> bans = link.is.getBanneds();
-						if (bans.size() == 0) p.sendMessage("§cIl n'y a aucun banni sur cette île !");
-						else {
-							p.sendMessage("§cListe des bannis de cette île :");
-							for (FacPlayer l : link.is.getBanneds()) {
-								p.sendMessage("§c - " + l.name);
-							}
-						}
-						break;
-					}
-					case "ban":
-					case "unban": {
-						FacPlayer target = IsCmdUtils.teamCheck(link, args);
+					case "invite": {
+						FacPlayer target = FCmdUtils.teamCheck(fp, args);
 						if (target == null) return true;
-						if (args[0].equals("ban")) {
-							if (link.is.addBanned(target)) {
-								p.sendMessage("§cTu as banni " + target.name + " !");
-								link.is.sendTeamMsg("§3 " + target.name + "§c à été bannu de l'île par " + link.getName() + "§c !");
+						if (fac.getMember(target.uuid) == null) {
+							if (fac.invites.contains(target)) {
+								p.sendMessage("§cCe joueur à déja été invité !");
+							} else {
+								fac.sendTeamMsg(MemberRank.DEFAULT.getName() + "§3 " + target.name + "§e à été invité sur l'île par " + fac.getName() + "§e !");
 								if (target.isOnline()) {
-									if (CooManager.getIslandID(target.p.getLocation()).equals(link.is.facID)) {
-										target.p.sendMessage("§cTu as été banni de cette île ! Tu as été téléporté au Spawn");
-										target.p.teleport(Utils.spawn);
-									}
+									target.p.sendMessage("§eTu as été invité dans la faction " + fac.getGenName() + " par " + fp.name + " !");
+									sendInviteMsg(target.p, fac);
+									target.p.sendMessage("§eTu peux à tout moment regarder tes invitations avec la commande §6/f invites");
 								}
-							} else {
-								p.sendMessage("§cCe joueur est déja banni !");
 							}
-						} else {
-							if (link.is.removeBanned(target)) {
-								p.sendMessage("§cTu as débanni " + target.name + " !");
-								link.is.sendTeamMsg(MemberRank.DEFAULT.getName() + "§3 " + target.name + "§e à été débanni de l'île par " + link.getName() + "§e !");
-							} else {
-								p.sendMessage("§cCe joueur n'est pas banni !");
-							}
-						}
+						} else p.sendMessage("§cCe joueur est déja membre sur cette île !");
 						break;
 					}
-
-					case "invite":
 					case "uninvite": {
-						FacPlayer target = IsCmdUtils.teamCheck(link, args);
+						FacPlayer target = FCmdUtils.teamCheck(fp, args);
 						if (target == null) return true;
-						FacPlayer targetLink = link.is.getMember(target.uuid);
-						if (args[0].equals("invite")) {
-							if (targetLink == null) {
-								if (link.is.isBanned(target)) {
-									p.sendMessage("§cCe joueur est banni de l'île ! Utilise §4/is unban§c pour le débannir");
-									return true;
+						if (fac.getMember(target.uuid) == null) {
+							if (fac.invites.contains(target)) {
+								fac.invites.remove(target);
+								target.invites.remove(fac);
+								fac.sendTeamMsg("§3L'invitation de " + target.name + "§e à été annulée par " + fac.getName() + "§e !");
+								if (target.isOnline()) {
+									target.p.sendMessage("§cL'invitation de la faction §4" + fac.getGenName() + "§c à été annulée !");
 								}
-								if (link.is.invitePlayer(target)) {
-									link.is.sendTeamMsg(MemberRank.DEFAULT.getName() + "§3 " + target.name + "§e à été invité sur l'île par " + link.getName() + "§e !");
-									if (target.p != null) {
-										target.p.sendMessage("§eTu as été invité sur l'île " + link.is.facID.str() + " par " + link.sp.name + " !");
-										sendInviteMsg(target.p, link.is);
-										target.p.sendMessage("§eTu peux à tout moment regarder tes invitations avec la commande §6/is invites");
-									}
-								} else p.sendMessage("§cCe joueur à déja été invité !");
-							} else p.sendMessage("§cCe joueur est déja membre sur cette île !");
-						} else if (args[0].equals("uninvite")) {
-							if (targetLink == null) {
-								if (link.is.cancelInvite(target)) {
-									link.is.sendTeamMsg("§3L'invitation de " + target.name + "§e à été annulée par " + link.getName() + "§e !");
-									if (target.p != null)
-										target.p.sendMessage("§cL'invitation de l'île §4" + link.is.facID.str() + "§c à été annulée !");
-								} else p.sendMessage("§cCe joueur n'est pas invité !");
-							} else p.sendMessage("§cCe joueur est un membre de l'île ! Utilise §4/is kick");
-						}
+							} else p.sendMessage("§cCe joueur n'est pas invité !");
+						} else p.sendMessage("§cCe joueur est un membre de l'île ! Utilise §4/is kick");
 						break;
 					}
 
 					case "kick":
 					case "demote":
 					case "promote": {
-						FacPlayer target = IsCmdUtils.teamCheck(link, args);
+						FacPlayer target = FCmdUtils.teamCheck(fac, args);
 						if (target == null) return true;
-						FacPlayer targetLink = link.is.getMember(target.uuid);
+						FacPlayer targetLink = fac.setRank();
 						if (targetLink == null) {
 							p.sendMessage("§cCe joueur n'est pas membre sur cette île !");
 							return true;
 						}
 						switch (args[0]) {
 							case "kick": {
-								if (targetLink.getRank().id < link.getRank().id) {
+								if (targetLink.getRank().id < fac.getRank().id) {
 									String n = targetLink.getName();
-									if (targetLink.removeMember()) {
-										link.is.sendTeamMsg("§7" + n + "§e à été expulsé de l'île par " + link.getName() + "§e !");
+									if (targetLink.getFaction()) {
+										fac.is.sendTeamMsg("§7" + n + "§e à été expulsé de l'île par " + fac.getName() + "§e !");
 										if (target.isOnline()) {
-											target.p.sendMessage("§cTu as été exclu de l'île par §3" + link.getName() + "§c !");
+											target.p.sendMessage("§cTu as été exclu de l'île par §3" + fac.getName() + "§c !");
 											target.p.teleport(Utils.spawn);
 										}
 									} else p.sendMessage("§cUne erreur s'est produite !");
@@ -313,11 +317,11 @@ public class FacCommand implements CommandExecutor {
 							}
 
 							case "promote": { // TODO FAIRE GAFFE AU FUTUR, POUR PROMOTE
-								if (targetLink.getRank().id + 1 < link.getRank().id) {
+								if (targetLink.getRank().id + 1 < fac.getRank().id) {
 									MemberRank nrank = MemberRank.getType(targetLink.getRank().id + 1);
 									byte ret = targetLink.setRank(nrank);
 									if (ret == 0) {
-										link.is.sendTeamMsg(targetLink.getName() + "§e à été promu par " + link.getName() + "§e !");
+										fac.is.sendTeamMsg(targetLink.getName() + "§e à été promu par " + fac.getName() + "§e !");
 									} else if (ret == 1) {
 										p.sendMessage("§cCe joueur est déja chef d'une autre île !");
 									} else {
@@ -330,13 +334,13 @@ public class FacCommand implements CommandExecutor {
 							}
 
 							case "demote": {
-								if (targetLink.getRank().id < link.getRank().id) {
+								if (targetLink.getRank().id < fac.getRank().id) {
 									if (targetLink.getRank().id <= MemberRank.RECRUE.id)
 										p.sendMessage("§cCette personne à déjà le rôle minimum ! Utilise §4/is kick§c pour l'exclure ");
 									else {
 										MemberRank nrank = MemberRank.getType(targetLink.getRank().id - 1);
 										if (targetLink.setRank(nrank) == 0)
-											link.is.sendTeamMsg(targetLink.getName() + "§e à été demote par " + link.getName() + "§e !");
+											fac.is.sendTeamMsg(targetLink.getName() + "§e à été demote par " + fac.getName() + "§e !");
 										else p.sendMessage("§cUne erreur s'est produite !");
 									}
 								} else p.sendMessage("§cCette personne est trop haut gradée !");
@@ -375,7 +379,7 @@ public class FacCommand implements CommandExecutor {
 
 					case "deposit":
 					case "withdraw": {
-						if (link.getRank() == MemberRank.RECRUE) {
+						if (fac.getRank() == MemberRank.RECRUE) {
 							p.sendMessage("§cTu es seulement une recrue ! Tu ne peux pas intéragir à la banque d'île");
 							return true;
 						}
@@ -384,7 +388,7 @@ public class FacCommand implements CommandExecutor {
 							try {
 								int n = Integer.parseInt(args[1]);
 								if (args[0].equals("withdraw")) {
-									if (link.is.withdrawBank(n)) {
+									if (fac.is.withdrawBank(n)) {
 										fp.addMoney(n);
 										p.sendMessage("§aTu as retiré §2" + Utils.formatMoney(n) + "§a de la banque d'île !");
 									} else {
@@ -392,7 +396,7 @@ public class FacCommand implements CommandExecutor {
 									}
 								} else {
 									if (fp.withdrawMoney(n)) {
-										link.is.addBank(n);
+										fac.is.addBank(n);
 										p.sendMessage("§aTu as ajouté §2" + Utils.formatMoney(n) + "§a à la banque d'île !");
 									} else p.sendMessage("§cTu n'as pas assez d'argent !");
 
@@ -406,7 +410,7 @@ public class FacCommand implements CommandExecutor {
 					}
 					case "bank":
 					case "money": {
-						p.sendMessage("§eValeur de la banque d'île actuellement : §6" + Utils.formatMoney(link.is.getBank()));
+						p.sendMessage("§eValeur de la banque d'île actuellement : §6" + Utils.formatMoney(fac.is.getBank()));
 						break;
 					}
 
@@ -415,15 +419,15 @@ public class FacCommand implements CommandExecutor {
 							p.sendMessage("§cMet un joueur en argument !");
 							return true;
 						}
-						if (link.sp.p.getWorld() != Dimension.OVERWORLD.world) {
+						if (fac.sp.p.getWorld() != Dimension.OVERWORLD.world) {
 							p.sendMessage("§cTu n'es pas dans l'overworld des îles !");
 						}
-						Faction is = BaseAPI.getIsland(link.sp.p.getLocation());
+						Faction is = BaseAPI.getIsland(fac.sp.p.getLocation());
 						if (is == null) {
 							p.sendMessage("§cTu n'es sur aucune île !");
 							return true;
 						}
-						if (is.getOwner() != link) {
+						if (is.getOwner() != fac) {
 							p.sendMessage("§cTu n'es pas le chef de cette île !");
 							return true;
 						}
@@ -443,7 +447,7 @@ public class FacCommand implements CommandExecutor {
 								p.sendMessage("§cCe joueur n'est pas le même que celui de ta première commande ! Annulation");
 								return true;
 							}
-							FacPlayer target = InternalAPI.getArgSP(link.sp.p, args[1], true);
+							FacPlayer target = InternalAPI.getArgSP(fac.sp.p, args[1], true);
 							if (target == null) return true;
 							FacPlayer newLink = target.getIsland(is.facID);
 							if (newLink == null) {
@@ -462,7 +466,7 @@ public class FacCommand implements CommandExecutor {
 							if (co == null) {
 								FacPlayer target = InternalAPI.getArgSP(p, args[1], true);
 								if (target == null) return true;
-								if (target.equals(link.sp)) {
+								if (target.equals(fac.sp)) {
 									p.sendMessage("§cCe joueur est.. toi-même ?");
 								} else if (target.getIsland(is.facID) == null) {
 									p.sendMessage("§cCe joueur n'est pas membre sur cette île !");
@@ -487,16 +491,16 @@ public class FacCommand implements CommandExecutor {
 
 
 					case "delete": {
-						if (link.sp.p.getWorld() != Dimension.OVERWORLD.world) {
+						if (fac.sp.p.getWorld() != Dimension.OVERWORLD.world) {
 							p.sendMessage("§cTu n'es pas dans l'overworld des îles !");
 							return true;
 						}
-						Faction is = BaseAPI.getIsland(link.sp.p.getLocation());
+						Faction is = BaseAPI.getIsland(fac.sp.p.getLocation());
 						if (is == null) {
 							p.sendMessage("§cTu n'es sur aucune île !");
 							return true;
 						}
-						if (is.getOwner() != link) {
+						if (is.getOwner() != fac) {
 							p.sendMessage("§cTu n'es pas le chef de cette île !");
 							return true;
 						}

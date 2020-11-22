@@ -17,9 +17,8 @@ public class FacPlayer {
 	protected MemberRank rank;
 	protected long money;
 
-	protected ArrayList<FacPlayer> invites = new ArrayList<>();
-
 	// online stuff
+	public ArrayList<Faction> invites = new ArrayList<>();
 	public boolean internalChat = false;
 
 
@@ -82,9 +81,9 @@ public class FacPlayer {
 	// FONCTIONS RANDOM
 
 
-	public boolean hasFaction() {
-		return faction!=null;
-	}
+//	public boolean hasFaction() { // je voudrais bien qu'on l'utilise pas en fait
+//		return faction!=null;
+//	}
 
 	public Faction getFaction() {
 		return faction;
