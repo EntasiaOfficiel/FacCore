@@ -1,9 +1,9 @@
 package fr.entasia.faccore;
 
+import fr.entasia.apis.regionManager.api.Region;
 import fr.entasia.faccore.apis.FacPlayer;
 import fr.entasia.faccore.apis.Faction;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -12,14 +12,13 @@ public class Utils {
 	public static final int ISSIZE = 400;
 	public static String guessWord = null;
 
-	public static World spawnWorld;
+
 	public static Location spawn;
 
 	public static ArrayList<Player> masterEditors = new ArrayList<>();
 
 	public static ArrayList<Faction> factionCache = new ArrayList<>();
 	public static ArrayList<FacPlayer> playerCache = new ArrayList<>();
-	public static ArrayList<FacPlayer> claimsCache = new ArrayList<>();
 
 
 	public static String formatMoney(long money){

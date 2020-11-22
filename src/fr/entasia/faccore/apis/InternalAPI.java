@@ -1,5 +1,7 @@
 package fr.entasia.faccore.apis;
 
+import fr.entasia.apis.regionManager.api.RegionManager;
+import fr.entasia.apis.utils.BasicLocation;
 import fr.entasia.apis.utils.PlayerUtils;
 import fr.entasia.apis.utils.ServerUtils;
 import fr.entasia.errors.EntasiaException;
@@ -7,8 +9,10 @@ import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.objs.RankTask;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.sql.ResultSet;
 import java.util.UUID;
@@ -45,7 +49,24 @@ public class InternalAPI {
 				postenable=1;
 				Main.main.getLogger().info("Activation POST du plugin");
 
-				loadData();
+				loadSQLData();
+
+
+
+				ConfigurationSection sec = Main.main.getConfig().getConfigurationSection("spawn");
+				assert sec != null;
+				Utils.spawn = new Location(Dimension.OVERWORLD.world, sec.getInt("x")+0.5, sec.getInt("y") + 0.2,
+						sec.getInt("z")+0.5, sec.getInt("yaw"), sec.getInt("pitch"));
+
+
+				sec = Main.main.getConfig().getConfigurationSection("warzone");
+				assert sec != null;
+
+				BasicLocation corner1 = new BasicLocation(sec.getInt("corner1.x"), sec.getInt("corner1.y"), sec.getInt("corner1.z"));
+				BasicLocation corner2 = new BasicLocation(sec.getInt("corner2.x"), sec.getInt("corner2.y"), sec.getInt("corner2.z"));
+
+				RegionManager.registerRegion("warzone", Dimension.OVERWORLD.world, corner1, corner2);
+
 
 				new RankTask().runTaskTimerAsynchronously(Main.main, 0, 20*60*5); // full cycle
 
@@ -60,7 +81,7 @@ public class InternalAPI {
 		}
 	}
 
-	public static void loadData() throws Throwable{
+	public static void loadSQLData() throws Throwable{
 		long time = System.currentTimeMillis();
 
 

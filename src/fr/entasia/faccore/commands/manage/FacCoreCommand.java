@@ -1,7 +1,6 @@
 package fr.entasia.faccore.commands.manage;
 
 import fr.entasia.faccore.Main;
-import fr.entasia.faccore.apis.InternalAPI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

@@ -4,7 +4,6 @@ import fr.entasia.apis.utils.PlayerUtils;
 import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.*;
-import fr.entasia.faccore.apis.Dimension;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Creature;

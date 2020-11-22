@@ -3,10 +3,8 @@ package fr.entasia.faccore;
 import fr.entasia.apis.sql.SQLConnection;
 import fr.entasia.faccore.commands.base.*;
 import fr.entasia.faccore.commands.manage.*;
-import fr.entasia.faccore.events.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
+import fr.entasia.faccore.events.BaseEvents;
+import fr.entasia.faccore.events.ProtectionEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Random;
@@ -31,7 +29,6 @@ public class Main extends JavaPlugin {
 		try{
 			main = this;
 			getLogger().info("Activation du plugin méga-badass...");
-			Utils.spawnWorld = Bukkit.getWorlds().get(0);
 
 			dev = main.getConfig().getBoolean("dev", false);
 
@@ -64,15 +61,14 @@ public class Main extends JavaPlugin {
 				getServer().shutdown();
 			}
 		}
+
+//		RegionManager.registerRegion("name", Utils.spawnWorld, new BasicLocation(1,1,1), new BasicLocation(2,2,2));
+
 	}
 
 	public static void loadConfigs() throws Throwable {
 		main.saveDefaultConfig();
 		main.reloadConfig();
-
-		ConfigurationSection sec = main.getConfig().getConfigurationSection("spawn");
-		Utils.spawn = new Location(Utils.spawnWorld, sec.getInt("x")+0.5, sec.getInt("y") + 0.2,
-				sec.getInt("z")+0.5, sec.getInt("yaw"), sec.getInt("pitch"));
-
+		// TODO voir si ca sert à un truc ?
 	}
 }

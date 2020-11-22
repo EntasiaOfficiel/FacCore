@@ -5,3 +5,14 @@ spawn:
   z: 0
   yaw: 0
   pitch: 0
+
+
+warzone:
+  corner1:
+    x: 0
+    y: 0
+    z: 0
+  corner2:
+    x: 0
+    y: 0
+    z: 0

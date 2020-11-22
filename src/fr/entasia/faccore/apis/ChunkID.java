@@ -30,10 +30,24 @@ public class ChunkID {
     }
 
 
+    // FONCTIONS A AVOIR
+
+
+    public boolean equals(ChunkID cid){
+        return dim==cid.dim&&x==cid.x&&z==cid.z;
+    }
+
+    public String toString(){
+        return "ChunkID["+dim+";"+x+";"+z+"]";
+    }
+
+
+    // FONCTIONS RANDOM
+
+
     public Chunk getChunk(){
-        if(chunk==null){
-            chunk = dim.world.getChunkAt(x, z);
-        }
+        if(chunk==null) chunk = dim.world.getChunkAt(x, z);
         return chunk;
     }
+
 }

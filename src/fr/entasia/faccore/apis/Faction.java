@@ -11,10 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.UUID;
+import java.util.*;
 
 public class Faction {
 
@@ -25,6 +22,7 @@ public class Faction {
 	protected ArrayList<FacPlayer> members = new ArrayList<>();
 	protected ArrayList<FacPlayer> invites = new ArrayList<>();
 	protected ArrayList<ChunkID> chunks = new ArrayList<>();
+	protected HashMap<Faction, FactionRelation> sideRelations = new HashMap<>();
 
 
 
@@ -47,11 +45,15 @@ public class Faction {
 		owner = fp;
 		fp.rank = MemberRank.CHEF;
 		members.add(fp);
-		ChunkSnapshot
 	}
 
 
 	// FONCTIONS A AVOIR
+
+
+	public boolean equals(Faction fac){
+		return id==fac.id;
+	}
 
 	public String toString(){
 		return "Faction["+id+"]";
@@ -127,13 +129,18 @@ public class Faction {
 	}
 
 
-	public void claim(){
+	public byte claim(ChunkID cid){
 		// TODO POWER CHECK
+		if(chunks.contains(cid))return 1;
 
+		chunks.add(cid);
+		return 0;
 	}
 
-	public void unClaim(){
+	public byte unClaim(ChunkID cid){
 		// TODO POWER
+		if(chunks.remove(cid))return 0;
+		else return 1;
 
 	}
 
@@ -165,7 +172,7 @@ public class Faction {
 	}
 
 
-	private static final BaseComponent[] b1 = ChatComponent.create("§3Is-Chat§b>> ");
+	private static final BaseComponent[] b1 = ChatComponent.create("§3Chat de faction§b>> ");
 	private static final BaseComponent[] b2 = ChatComponent.create(" §8| §7");
 
 	public void islandChat(FacPlayer fp, String msg){

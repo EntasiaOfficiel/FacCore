@@ -28,4 +28,9 @@ public enum Dimension {
 		return false;
 	}
 
+
+	@Override
+	public String toString() {
+		return "Dim["+ world.getName()+"]";
+	}
 }

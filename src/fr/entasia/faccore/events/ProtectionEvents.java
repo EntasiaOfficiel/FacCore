@@ -1,5 +1,7 @@
 package fr.entasia.faccore.events;
 
+import com.destroystokyo.paper.Title;
+import fr.entasia.apis.regionManager.api.Region;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.*;
 import org.bukkit.GameMode;
@@ -169,9 +171,12 @@ public class ProtectionEvents implements Listener { // TODO A RVOIR TOTALEMENT
 			Faction fr = BaseAPI.getFaction(e.getFrom());
 			Faction to = BaseAPI.getFaction(e.getTo());
 			if(fr!=to){ // changement de Faction
-				if (to == null) {
-					e.getPlayer().sendActionBar("§fTu es sorti de "+ checkIs(fr, p)+" !");
+				if (to != null) {
+					Title title = new Title("§cTu es entré dans la faction "+to.getName(),null,1,20,1);
+					e.getPlayer().sendTitle(title);
 				} else {
+
+					Region reg =
 					e.getPlayer().sendActionBar("§fTu es rentré sur "+ checkIs(to, p)+" !");
 				}
 			}

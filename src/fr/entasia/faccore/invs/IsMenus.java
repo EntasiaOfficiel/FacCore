@@ -2,14 +2,11 @@ package fr.entasia.faccore.invs;
 
 import fr.entasia.apis.menus.MenuClickEvent;
 import fr.entasia.apis.menus.MenuCreator;
-import fr.entasia.apis.other.InstantFirework;
 import fr.entasia.apis.other.ItemBuilder;
 import fr.entasia.apis.utils.ItemUtils;
 import fr.entasia.apis.utils.TextUtils;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.FacPlayer;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +15,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 public class IsMenus {
 

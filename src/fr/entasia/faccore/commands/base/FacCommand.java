@@ -4,7 +4,6 @@ import fr.entasia.apis.other.ChatComponent;
 import fr.entasia.apis.other.CodePasser;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.*;
-import fr.entasia.faccore.apis.Dimension;
 import fr.entasia.faccore.invs.IsMenus;
 import fr.entasia.faccore.invs.OtherMenus;
 import net.md_5.bungee.api.chat.ClickEvent;

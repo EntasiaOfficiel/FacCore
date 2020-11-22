@@ -32,9 +32,9 @@ public class BaseAPI {
 
 
 	public static Faction getFaction(Location loc){
-		Chunk c = loc.getChunk();
+		ChunkID cid = new ChunkID(loc.getChunk());
 		for(Faction lf : Utils.factionCache){
-			if(lf.chunks.contains(c)){ //TODO convertir chunk en chunkID
+			if(lf.chunks.contains(cid)){ //TODO convertir chunk en chunkID
 				return lf;
 			}
 		}
