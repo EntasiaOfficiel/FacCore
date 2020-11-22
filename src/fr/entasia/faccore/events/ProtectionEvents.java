@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class ProtectionEvents implements Listener { // TODO A RVOIR TOTALEMENT
 
-	private static final Set<Material> containers = EnumSet.of( // Openable ou Container
+	private static final Set<Material> containers = EnumSet.of( // TODO Openable ou Container
 			Material.CHEST,
 			Material.TRAPPED_CHEST,
 

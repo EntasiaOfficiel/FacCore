@@ -46,9 +46,9 @@ public class BaseEvents implements Listener {
 
 			}catch(Exception e2){
 				e2.printStackTrace();
-				e.getPlayer().kickPlayer("§c): Une erreur est survenue lors de la lecture de ton profil Skyblock ! Contacte un Membre du Staff");
+				e.getPlayer().kickPlayer("§c): Une erreur est survenue lors de la lecture de ton profil Factions ! Contacte un Membre du Staff");
 			}
-		}else e.getPlayer().kickPlayer("§cLe Post-Loading du plugin Skyblock n'est pas terminé ! Si tu ne peux pas te connecter dans une minute, contacte un Membre du Staff");
+		}else e.getPlayer().kickPlayer("§cLe Post-Loading du plugin Factions n'est pas terminé ! Si tu ne peux pas te connecter dans une minute, contacte un Membre du Staff");
 	}
 
 	@EventHandler

@@ -5,7 +5,7 @@ import fr.entasia.apis.utils.ServerUtils;
 import fr.entasia.errors.EntasiaException;
 import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
-import fr.entasia.faccore.objs.tasks.RankTask;
+import fr.entasia.faccore.objs.RankTask;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -22,9 +22,9 @@ public class InternalAPI {
 	}
 
 	public static void warn(String msg, boolean stack) {
-		if(stack)new EntasiaException("Warning SkyCore").printStackTrace();
+		if(stack)new EntasiaException("Warning FacCore").printStackTrace();
 		Main.main.getLogger().warning(msg);
-		ServerUtils.permMsg("logs.warn", "§6Warning SkyCore : §c"+msg);
+		ServerUtils.permMsg("logs.warn", "§6Warning FacCore : §c"+msg);
 	}
 
 
@@ -43,9 +43,9 @@ public class InternalAPI {
 		try{
 			if(postenable==0){
 				postenable=1;
-				Main.main.getLogger().info("Activation POST du plugin méga-badass");
+				Main.main.getLogger().info("Activation POST du plugin");
 
-				if(Main.sql!=null) loadData();
+				loadData();
 
 				new RankTask().runTaskTimerAsynchronously(Main.main, 0, 20*60*5); // full cycle
 
@@ -64,9 +64,8 @@ public class InternalAPI {
 		long time = System.currentTimeMillis();
 
 
-		Faction fac = null;
-		FacPlayer fp = null;
-		FacPlayer link;
+		Faction fac=null;
+		FacPlayer fp;
 
 		ResultSet rs = Main.sql.fastSelectUnsafe("SELECT * FROM factions");
 		while(rs.next()){ // BASEISLAND
@@ -99,17 +98,6 @@ public class InternalAPI {
 				Main.main.getLogger().severe("RANK="+fp.rank);
 				continue;
 			}
-
-
-			fp = BaseAPI.getFacPlayer(UUID.fromString(rs.getString("uuid")));
-			if(fp==null){
-				Main.main.getLogger().severe("Tentative de récupération d'un joueur non existant !");
-				Main.main.getLogger().severe("UUID="+rs.getString("uuid"));
-				Main.main.getLogger().severe("ISID="+ facID);
-				Main.main.getLogger().severe("RANK="+fp.rank);
-				continue;
-			}
-
 
 			fac.members.add(fp);
 			fp.faction = fac;

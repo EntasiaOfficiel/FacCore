@@ -8,7 +8,6 @@ import fr.entasia.apis.utils.ItemUtils;
 import fr.entasia.apis.utils.TextUtils;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.FacPlayer;
-import fr.entasia.faccore.objs.isutils.Extensions;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;

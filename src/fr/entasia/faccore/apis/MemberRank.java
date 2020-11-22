@@ -1,6 +1,6 @@
 package fr.entasia.faccore.apis;
 
-// rien/ban = 0 (plugin/Base SQL)
+// rien = 0 (plugin/Base SQL)
 // recrue = 1
 // membre = 2
 // adjoint = 4

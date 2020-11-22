@@ -1,4 +1,4 @@
-package fr.entasia.faccore.objs.tasks;
+package fr.entasia.faccore.objs;
 
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.Faction;
@@ -20,9 +20,9 @@ public class RankTask extends BukkitRunnable {
 			for (Faction is : Utils.factionCache) {
 				if (rankEntry.bank < is.getBank()) {
 					for (RankEntry is2 : list) {
-						if (is2.is == is) continue check;
+						if (is2.fac == is) continue check;
 					}
-					rankEntry.is = is;
+					rankEntry.fac = is;
 					rankEntry.bank = is.getBank();
 				}
 			}
@@ -31,7 +31,7 @@ public class RankTask extends BukkitRunnable {
 	}
 
 	public static class RankEntry{
-		public Faction is;
+		public Faction fac;
 		public long bank;
 
 	}

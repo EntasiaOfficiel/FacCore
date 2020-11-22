@@ -3,7 +3,7 @@ package fr.entasia.faccore.invs;
 import fr.entasia.apis.menus.MenuCreator;
 import fr.entasia.apis.other.ItemBuilder;
 import fr.entasia.apis.utils.ItemUtils;
-import fr.entasia.faccore.objs.tasks.RankTask;
+import fr.entasia.faccore.objs.RankTask;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,7 +15,7 @@ public class OtherMenus {
 	public static MenuCreator topRankMenu = new MenuCreator();
 	public static void topRankOpen(Player p){
 
-		Inventory inv = topRankMenu.createInv(6, "§6Top 10 des niveau d'îles :");
+		Inventory inv = topRankMenu.createInv(6, "§6Top 10 des factions :");
 
 
 		ItemStack item;
@@ -23,11 +23,11 @@ public class OtherMenus {
 		SlotEntry se;
 		for(int i=0;i<entries.length;i++){
 			re = RankTask.list[i];
-			if(re.is==null||re.bank <=0)break;
+			if(re.fac ==null||re.bank <=0)break;
 			se = entries[i];
-			item = new ItemBuilder(Material.PLAYER_HEAD).damage(3).name(se.color+"Top "+(i+1)).lore(re.is.getName(), "§aNiveau : "+
-					re.bank, "§cChef §6: "+re.is.getOwner().sp.name).build();
-			ItemUtils.placeSkullAsync(inv, se.slot, item, re.is.getOwner().sp.name);
+			item = new ItemBuilder(Material.PLAYER_HEAD).damage(3).name(se.color+"Top "+(i+1)).lore(re.fac.getName(), "§aNiveau : "+
+					re.bank, "§cChef §6: "+re.fac.getOwner().name).build();
+			ItemUtils.placeSkullAsync(inv, se.slot, item, re.fac.getOwner().name);
 		}
 
 		p.openInventory(inv);
