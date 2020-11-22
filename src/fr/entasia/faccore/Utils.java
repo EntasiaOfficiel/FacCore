@@ -12,6 +12,9 @@ public class Utils {
 	public static final int ISSIZE = 400;
 	public static String guessWord = null;
 
+	public static Region warzone;
+	public static Region spawnRegion;
+
 
 	public static Location spawn;
 

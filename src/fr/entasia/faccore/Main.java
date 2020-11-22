@@ -5,18 +5,12 @@ import fr.entasia.faccore.commands.base.*;
 import fr.entasia.faccore.commands.manage.*;
 import fr.entasia.faccore.events.BaseEvents;
 import fr.entasia.faccore.events.ProtectionEvents;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Random;
 
 public class Main extends JavaPlugin {
-
-	/*
-	Stratégie actuelle :
-
-	- Charger toutes les iles au démarrage
-	- Charger tout les joueurs au démarragze
-	 */
 
 	public static Main main;
 	public static boolean dev;
@@ -33,6 +27,7 @@ public class Main extends JavaPlugin {
 			dev = main.getConfig().getBoolean("dev", false);
 
 			loadConfigs();
+
 
 			sql = new SQLConnection(dev).mariadb("faccore", "playerdata");
 

@@ -129,22 +129,6 @@ public class Faction {
 	}
 
 
-	public byte claim(ChunkID cid){
-		// TODO POWER CHECK
-		if(chunks.contains(cid))return 1;
-
-		chunks.add(cid);
-		return 0;
-	}
-
-	public byte unClaim(ChunkID cid){
-		// TODO POWER
-		if(chunks.remove(cid))return 0;
-		else return 1;
-
-	}
-
-
 	public ArrayList<FacPlayer> getInvites(){
 		return new ArrayList<>(invites);
 	}
@@ -171,6 +155,33 @@ public class Faction {
 		return invites.remove(sp);
 	}
 
+
+	public ArrayList<ChunkID> getChunks(){
+		return new ArrayList<>(chunks);
+	}
+
+	public byte claim(ChunkID cid){
+		// TODO POWER CHECK
+		if(chunks.contains(cid))return 1;
+
+		chunks.add(cid);
+		return 0;
+	}
+
+	public byte unClaim(ChunkID cid){
+		// TODO POWER
+		if(chunks.remove(cid))return 0;
+		else return 1;
+	}
+
+
+	public HashMap<Faction, FactionRelation> getSideRelations(){
+		return new HashMap<Faction, FactionRelation>(sideRelations);
+	}
+
+	public FactionRelation getSideRelation(Faction fac){
+		return sideRelations.get(fac);
+	}
 
 	private static final BaseComponent[] b1 = ChatComponent.create("§3Chat de faction§b>> ");
 	private static final BaseComponent[] b2 = ChatComponent.create(" §8| §7");

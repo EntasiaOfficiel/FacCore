@@ -17,8 +17,9 @@ public class FacPlayer {
 	protected MemberRank rank;
 	protected long money;
 
+	protected ArrayList<FacPlayer> invites = new ArrayList<>();
+
 	// online stuff
-	public ArrayList<Faction> invites = new ArrayList<>(); // TODO A VOIR POUR PAS INIT
 	public boolean internalChat = false;
 
 
@@ -65,7 +66,7 @@ public class FacPlayer {
 	// FONCTIONS LIEES AU RANK
 
 	public String getName(){
-		return rank.getName()+" "+name;
+		return rank.getName()+"§7 "+name;
 	}
 
 	public MemberRank getRank(){

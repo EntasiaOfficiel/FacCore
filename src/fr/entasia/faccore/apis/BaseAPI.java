@@ -34,7 +34,7 @@ public class BaseAPI {
 	public static Faction getFaction(Location loc){
 		ChunkID cid = new ChunkID(loc.getChunk());
 		for(Faction lf : Utils.factionCache){
-			if(lf.chunks.contains(cid)){ //TODO convertir chunk en chunkID
+			if(lf.chunks.contains(cid)){
 				return lf;
 			}
 		}
@@ -53,6 +53,7 @@ public class BaseAPI {
 		if(p==null)return null;
 		else return getOnlineFP(p);
 	}
+
 	public static FacPlayer getOnlineFP(Player p){
 		List<MetadataValue> meta = p.getMetadata("FacPlayer");
 		if(meta.size()==0)return null;
@@ -96,12 +97,13 @@ public class BaseAPI {
 		}
 		Faction fac = new Faction(facID, fp);
 
-		Main.sql.fastUpdate("INSERT INTO factions (owner) VALUES (?)", fp.uuid);
-		Main.sql.fastUpdate("UPDATE fac_players SET faction=?, rank=? WHERE uuid=?", MemberRank.CHEF.id, fp.uuid);
+		Main.sql.fastUpdateUnsafe("INSERT INTO factions (owner) VALUES (?)", fp.uuid);
+		Main.sql.fastUpdateUnsafe("UPDATE fac_players SET faction=?, rank=? WHERE uuid=?", facID, MemberRank.CHEF.id, fp.uuid);
 
 		Utils.factionCache.add(fac);
 		return fac;
 	}
+
 	// DELETE
 
 	public static void deleteFaction(Faction fac) throws Exception {
@@ -117,14 +119,13 @@ public class BaseAPI {
 		fac.sendTeamMsg("\nTa faction vient d'être supprimée !\n");
 
 		Main.sql.fastUpdateUnsafe("DELETE FROM factions WHERE faction=?", fac.id);
-		Main.sql.fastUpdate("UPDATE sky_players SET factionnull, rank=null WHERE faction=?", fac.id);
+		Main.sql.fastUpdate("UPDATE sky_players SET faction=null, rank=null WHERE faction=?", fac.id);
 	}
 
-	public static boolean deleteSkyPlayer(FacPlayer sp) {
+	@Deprecated // method pas complète
+	public static boolean deleteFacPlayer(FacPlayer sp) {
 
 		int a = Main.sql.fastUpdate("DELETE FROM fac_players WHERE uuid=?", sp.uuid);
-		if(a==-1)return false;
-		a = Main.sql.fastUpdate("DELETE FROM sky_pis WHERE uuid=?", sp.uuid.toString());
 		if(a==-1)return false;
 
 		playerCache.remove(sp);

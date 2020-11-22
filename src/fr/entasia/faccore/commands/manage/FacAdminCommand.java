@@ -127,7 +127,7 @@ public class FacAdminCommand implements CommandExecutor {
 						else{
 							FacPlayer target = InternalAPI.getArgSP(p, args[1], false);
 							if(target!=null){
-								if(BaseAPI.deleteSkyPlayer(target))p.sendMessage("§cJoueur supprimé avec succès !");
+								if(BaseAPI.deleteFacPlayer(target))p.sendMessage("§cJoueur supprimé avec succès !");
 								else p.sendMessage("§4Erreur lors de la suppression du joueur !");
 							}
 						}

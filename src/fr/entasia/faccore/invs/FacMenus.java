@@ -16,7 +16,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class IsMenus {
+public class FacMenus {
 
 	// MENU DE BASE DE LA FACTION
 

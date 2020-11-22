@@ -6,7 +6,7 @@ import fr.entasia.faccore.apis.FacPlayer;
 import fr.entasia.faccore.apis.Faction;
 import fr.entasia.faccore.apis.InternalAPI;
 import fr.entasia.faccore.apis.MemberRank;
-import fr.entasia.faccore.invs.IsMenus;
+import fr.entasia.faccore.invs.FacMenus;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.command.CommandSender;
@@ -85,13 +85,13 @@ public class IsCmdUtils {
 
 	protected static FacPlayer isCheck(FacPlayer sp){
 		if (sp.getIslands().size()==0){
-			IsMenus.startIslandChooseOpen(sp);
+			FacMenus.startIslandChooseOpen(sp);
 		}
 		else {
 			FacPlayer link = sp.referentIsland(true);
 			if (link == null){
 				sp.p.sendMessage("§cTu dois d'abord choisir une île préférée pouvoir choisir ces options ! (On ne sait pas de laquelle tu parles !)");
-				IsMenus.islandsListOpen(sp, true);
+				FacMenus.islandsListOpen(sp, true);
 			}
 			return link;
 		}

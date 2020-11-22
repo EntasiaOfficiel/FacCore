@@ -58,14 +58,19 @@ public class InternalAPI {
 				Utils.spawn = new Location(Dimension.OVERWORLD.world, sec.getInt("x")+0.5, sec.getInt("y") + 0.2,
 						sec.getInt("z")+0.5, sec.getInt("yaw"), sec.getInt("pitch"));
 
+				BasicLocation corner1 = new BasicLocation(sec.getInt("corner1.x"), sec.getInt("corner1.y"), sec.getInt("corner1.z"));
+				BasicLocation corner2 = new BasicLocation(sec.getInt("corner2.x"), sec.getInt("corner2.y"), sec.getInt("corner2.z"));
+
+				Utils.spawnRegion = RegionManager.registerRegion("spawn", Dimension.OVERWORLD.world, corner1, corner2);
+
 
 				sec = Main.main.getConfig().getConfigurationSection("warzone");
 				assert sec != null;
 
-				BasicLocation corner1 = new BasicLocation(sec.getInt("corner1.x"), sec.getInt("corner1.y"), sec.getInt("corner1.z"));
-				BasicLocation corner2 = new BasicLocation(sec.getInt("corner2.x"), sec.getInt("corner2.y"), sec.getInt("corner2.z"));
+				corner1 = new BasicLocation(sec.getInt("corner1.x"), sec.getInt("corner1.y"), sec.getInt("corner1.z"));
+				corner2 = new BasicLocation(sec.getInt("corner2.x"), sec.getInt("corner2.y"), sec.getInt("corner2.z"));
 
-				RegionManager.registerRegion("warzone", Dimension.OVERWORLD.world, corner1, corner2);
+				Utils.warzone = RegionManager.registerRegion("warzone", Dimension.OVERWORLD.world, corner1, corner2);
 
 
 				new RankTask().runTaskTimerAsynchronously(Main.main, 0, 20*60*5); // full cycle
