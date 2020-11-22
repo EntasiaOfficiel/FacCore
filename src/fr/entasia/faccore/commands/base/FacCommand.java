@@ -259,7 +259,7 @@ public class FacCommand implements CommandExecutor {
 					}
 
 					case "invite": {
-						FacPlayer target = FCmdUtils.teamCheck(fp, args);
+						FacPlayer target = FCmdUtils.argTeamCheck(fp, args);
 						if (target == null) return true;
 						if (fac.getMember(target.uuid) == null) {
 							if (fac.invites.contains(target)) {
@@ -276,7 +276,7 @@ public class FacCommand implements CommandExecutor {
 						break;
 					}
 					case "uninvite": {
-						FacPlayer target = FCmdUtils.teamCheck(fp, args);
+						FacPlayer target = FCmdUtils.argTeamCheck(fp, args);
 						if (target == null) return true;
 						if (fac.getMember(target.uuid) == null) {
 							if (fac.invites.contains(target)) {
@@ -294,7 +294,7 @@ public class FacCommand implements CommandExecutor {
 					case "kick":
 					case "demote":
 					case "promote": {
-						FacPlayer target = FCmdUtils.teamCheck(fac, args);
+						FacPlayer target = FCmdUtils.argTeamCheck(fac, args);
 						if (target == null) return true;
 						FacPlayer targetLink = fac.setRank();
 						if (targetLink == null) {
