@@ -6,7 +6,6 @@ import fr.entasia.faccore.apis.FacPlayer;
 import fr.entasia.faccore.apis.Faction;
 import fr.entasia.faccore.apis.InternalAPI;
 import fr.entasia.faccore.apis.MemberRank;
-import fr.entasia.faccore.invs.FacMenus;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.hover.content.Text;

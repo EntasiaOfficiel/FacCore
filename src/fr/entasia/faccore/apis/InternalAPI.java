@@ -92,9 +92,10 @@ public class InternalAPI {
 
 		Faction fac=null;
 		FacPlayer fp;
+		int facID;
 
 		ResultSet rs = Main.sql.fastSelectUnsafe("SELECT * FROM factions");
-		while(rs.next()){ // BASEISLAND
+		while(rs.next()){ // FACTIONS
 			fac = new Faction(rs.getInt("id"));
 
 			fac.name = rs.getString("name");
@@ -103,8 +104,16 @@ public class InternalAPI {
 			Utils.factionCache.add(fac);
 		}
 
+		rs = Main.sql.fastSelectUnsafe("SELECT * FROM fac_claims");
+		while(rs.next()) { // CLAIMS
+			facID = rs.getInt("faction");
+			if(facID!=fac.id)fac = BaseAPI.getFaction(facID);
+
+			fac.claims.add(new ChunkID(Dimension.get(rs.getInt("dimension")), rs.getInt("x"), rs.getInt("z")));
+		}
+
 		rs = Main.sql.connection.prepareStatement("SELECT global.name, sky_players.* from sky_players INNER JOIN global ON sky_players.uuid = global.uuid").executeQuery();
-		int facID;
+
 		while(rs.next()){ // FACPLAYER
 			fp = new FacPlayer(UUID.fromString(rs.getString("uuid")), rs.getString("name"));
 			fp.money = rs.getLong("money");

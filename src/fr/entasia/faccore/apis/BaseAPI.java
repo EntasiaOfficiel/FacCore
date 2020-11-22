@@ -5,7 +5,6 @@ import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.objs.FacException;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -34,7 +33,7 @@ public class BaseAPI {
 	public static Faction getFaction(Location loc){
 		ChunkID cid = new ChunkID(loc.getChunk());
 		for(Faction lf : Utils.factionCache){
-			if(lf.chunks.contains(cid)){
+			if(lf.claims.contains(cid)){
 				return lf;
 			}
 		}

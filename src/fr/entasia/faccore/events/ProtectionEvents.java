@@ -3,16 +3,13 @@ package fr.entasia.faccore.events;
 import com.destroystokyo.paper.Title;
 import fr.entasia.apis.regionManager.api.Region;
 import fr.entasia.apis.regionManager.api.RegionManager;
-import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.*;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Tag;
-import org.bukkit.block.*;
-import org.bukkit.block.data.type.Door;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Firework;
+import org.bukkit.block.Block;
+import org.bukkit.block.Lockable;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -27,12 +24,11 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
-public class ProtectionEvents implements Listener { // TODO A REVOIR TOTALEMENT
+public class ProtectionEvents implements Listener {
 
 //	private static final Set<Material> containers = EnumSet.of(
 //			Material.CHEST,
@@ -56,13 +52,44 @@ public class ProtectionEvents implements Listener { // TODO A REVOIR TOTALEMENT
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public static void onDamage(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player){
-			Player p = (Player) e.getEntity();
-			if (Dimension.isGameWorld(p.getWorld())){
+			Player victim = (Player) e.getEntity();
+			FacPlayer fplayer = BaseAPI.getFacPlayer(victim);
+			Faction faction = fplayer.getFaction();
+			if (Dimension.isGameWorld(victim.getWorld())){
+
+				Player pDamager = null;
 				if (e.getDamager() instanceof Player) {
-					e.setCancelled(true);
-					return;
+					pDamager = (Player) e.getDamager();
 				}
-				if (e.getDamager() instanceof Firework) e.setCancelled(true);
+				if (e.getDamager() instanceof Arrow){
+					Arrow arrow = (Arrow) e.getEntity();
+					ProjectileSource damager = arrow.getShooter();
+					if(damager instanceof Player){
+						pDamager = (Player) damager;
+
+					}
+				}
+
+				if(pDamager != null){
+					FacPlayer fDamager = BaseAPI.getFacPlayer(pDamager);
+					Faction dFaction = fDamager.getFaction();
+
+					if(dFaction == null || faction == null)return;
+
+					if(faction == dFaction){
+						e.setCancelled(true);
+						pDamager.sendMessage("§cCette personne fait partie de ta faction !");
+					}
+
+					FactionRelation relation = faction.getSideRelation(dFaction);
+					FactionRelation dRelation = dFaction.getSideRelation(faction);
+
+					if(relation == dRelation && (relation == FactionRelation.ALLY || relation == FactionRelation.TRUCE )){
+						e.setCancelled(true);
+						pDamager.sendMessage("§cVos factions sont alliées");
+					}
+
+				}
 			}
 		}
 	}

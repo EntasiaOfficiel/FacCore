@@ -10,7 +10,7 @@ public class ChunkID {
     protected Chunk chunk;
 
     public ChunkID(Chunk c){
-        dim = Dimension.getDimension(c.getWorld());
+        dim = Dimension.get(c.getWorld());
         if(dim==null)throw new FacException("World is not a game world");
         this.x = c.getX();
         this.z = c.getZ();
@@ -23,7 +23,7 @@ public class ChunkID {
     }
 
     public ChunkID(World w, int x, int z){
-        this.dim = Dimension.getDimension(w);
+        this.dim = Dimension.get(w);
         if(this.dim==null)throw new FacException("World is not a game world");
         this.x = x>>4;
         this.z = z>>4;

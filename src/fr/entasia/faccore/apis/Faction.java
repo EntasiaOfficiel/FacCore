@@ -20,7 +20,7 @@ public class Faction {
 	protected Location home;
 	protected FacPlayer owner;
 	protected ArrayList<FacPlayer> members = new ArrayList<>();
-	protected ArrayList<ChunkID> chunks = new ArrayList<>();
+	protected ArrayList<ChunkID> claims = new ArrayList<>();
 	protected HashMap<Faction, FactionRelation> sideRelations = new HashMap<>();
 
 
@@ -99,7 +99,7 @@ public class Faction {
 	public void setHome(Location home){
 		this.home = home;
 			Main.sql.fastUpdate("UPDATE factions SET home_w=?, home_x=?, home_y=?, home_z=? where faction=?",
-					Dimension.getDimension(home.getWorld()).id, home.getBlockX(), home.getBlockY(), home.getBlockZ(), id);
+					Dimension.get(home.getWorld()).id, home.getBlockX(), home.getBlockY(), home.getBlockZ(), id);
 	}
 
 
@@ -134,21 +134,25 @@ public class Faction {
 	}
 
 
-	public ArrayList<ChunkID> getChunks(){
-		return new ArrayList<>(chunks);
+	public ArrayList<ChunkID> getClaims(){
+		return new ArrayList<>(claims);
 	}
 
 	public byte claim(ChunkID cid){
 		// TODO POWER CHECK
-		if(chunks.contains(cid))return 1;
+		if(claims.contains(cid))return 1;
 
-		chunks.add(cid);
+		claims.add(cid);
+		Main.sql.fastUpdate("INSERT INTO fac_claims (faction, dimension, x, y) VALUES (?, ?, ?, ?)", id, cid.dim, cid.x, cid.z);
 		return 0;
 	}
 
-	public byte unClaim(ChunkID cid){
+	public byte unclaim(ChunkID cid){
 		// TODO POWER
-		if(chunks.remove(cid))return 0;
+		if(claims.remove(cid)){
+			Main.sql.fastUpdate("DELETE FROM fac_claims WHERE dim=? AND x=? AND z=?", cid.dim, cid.x, cid.z);
+			return 0;
+		}
 		else return 1;
 	}
 

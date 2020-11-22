@@ -16,6 +16,7 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -26,7 +27,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class BaseEvents implements Listener {
-
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onJoin(PlayerJoinEvent e) {
@@ -40,7 +40,7 @@ public class BaseEvents implements Listener {
 				fp.p = e.getPlayer();
 				fp.p.setMetadata("FacPlayer", new FixedMetadataValue(Main.main, fp));
 
-				if(fp.hasFaction()&&fp.getFaction().getHome()!=null)fp.p.teleport(fp.getFaction().getHome());
+				if(fp.getFaction()!=null&&fp.getFaction().getHome()!=null)fp.p.teleport(fp.getFaction().getHome());
 				else fp.p.teleport(Utils.spawn);
 
 			}catch(Exception e2){
@@ -55,6 +55,16 @@ public class BaseEvents implements Listener {
 		if(e.getRightClicked().getWorld()==Utils.spawnWorld){
 			if(OthersAPI.isMasterEdit(e.getPlayer()))return;
 			e.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void a(AsyncPlayerChatEvent e) {
+		FacPlayer fp = BaseAPI.getOnlineFP(e.getPlayer());
+		assert fp != null;
+		if(fp.internalChat) {
+			e.setCancelled(true);
+			fp.getFaction().islandChat(fp, String.join(" ", e.getMessage()));
 		}
 	}
 
@@ -105,11 +115,6 @@ public class BaseEvents implements Listener {
 				assert sp != null;
 
 				Location loc = Utils.spawn;
-				// TODO CHECK S'IL EST SUR UN CLAIM DE SA FAC POUR LE TP AU HOME
-//				if (Dimensions.isGameWorld(p.getWorld())) {
-//					Faction is = BaseAPI.getFaction(p.getLocation());
-//					if (is != null) loc = is.getHome();
-//				}
 
 				PlayerUtils.reset(p);
 				p.setNoDamageTicks(80); // c'est pas des ticks
