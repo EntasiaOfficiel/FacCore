@@ -6,7 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class SkyCoreCommand implements CommandExecutor {
+public class FacCoreCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -23,16 +23,6 @@ public class SkyCoreCommand implements CommandExecutor {
 						e.printStackTrace();
 						sender.sendMessage("§cConfiguration rechargée avec erreur ! ( voir console )");
 					}
-
-				}else if(args[0].equalsIgnoreCase("sql")){
-					if(args.length==1)sender.sendMessage("§cArguments : enable/disable");
-					else if(args[1].equalsIgnoreCase("enable")){
-						InternalAPI.enableIGSQL = true;
-						sender.sendMessage("§aSauvegardes SQL activées !");
-					}else if(args[1].equalsIgnoreCase("disable")){
-						InternalAPI.enableIGSQL = false;
-						sender.sendMessage("§cSauvegardes SQL désactivées !");
-					}else sender.sendMessage("§cArgument invalide !");
 				}else {
 					sender.sendMessage("§cArgument invalide ! Arguments disponibles :");
 					showArgs(sender);

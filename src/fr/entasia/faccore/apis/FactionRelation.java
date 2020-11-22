@@ -4,9 +4,9 @@ import org.bukkit.ChatColor;
 
 public enum FactionRelation {
 	ALLY(4, ChatColor.GREEN, "Allié"),
-	TRUCE(3, ChatColor.BLUE, "Truce ?"),
+	TRUCE(3, ChatColor.BLUE, "En paix"), // TODO A CHANGER
 	NEUTRAL(2, ChatColor.GRAY, "Neutre"),
-	ENEMY(1, ChatColor.RED, "Ennemis"),
+	ENEMY(1, ChatColor.RED, "Ennemi"),
 
 	;
 

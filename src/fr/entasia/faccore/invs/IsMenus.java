@@ -22,172 +22,25 @@ import java.util.HashMap;
 
 public class IsMenus {
 
-	// MENU CHOISIR UNE ILE DE DEPART
-
-	private static final MenuCreator startIslandChooseMenu = new MenuCreator() {
-
-		@Override
-		public void onMenuClick(MenuClickEvent e) {
-			FacPlayer sp = (FacPlayer)e.data;
-			e.player.closeInventory();
-			switch(e.item.getType()){
-				case GRASS:
-					TerrainManager.tryGenerateIsland(sp, IslandType.DEFAULT);
-					break;
-				case ICE:
-					TerrainManager.tryGenerateIsland(sp, IslandType.ICE);
-					break;
-				case SAND:
-					TerrainManager.tryGenerateIsland(sp, IslandType.DESERT);
-					break;
-				case VINE:
-					TerrainManager.tryGenerateIsland(sp, IslandType.JUNGLE);
-					break;
-				case TERRACOTTA:
-					TerrainManager.tryGenerateIsland(sp, IslandType.MESA);
-					break;
-				case LILY_PAD:
-					TerrainManager.tryGenerateIsland(sp, IslandType.SWAMP);
-					break;
-				default:
-					e.player.sendMessage("§cErreur ! Cette ile n'a pas été correctement configurée ! Préviens un Membre du Staff");
-			}
-			e.player.closeInventory();
-		}
-	};
-
-
-	public static void startIslandChooseOpen(FacPlayer sp){
-		Inventory inv = startIslandChooseMenu.createInv(3, "§6Quelle île veut-tu ?", sp);
-
-		ItemStack item = new ItemStack(Material.GRASS);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName("§aIle Basique");
-		item.setItemMeta(meta);
-		inv.setItem(10, item);
-
-		item = new ItemStack(Material.ICE);
-		meta = item.getItemMeta();
-		meta.setDisplayName("§bIle des Neiges");
-		item.setItemMeta(meta);
-		inv.setItem(20, item);
-
-		item = new ItemStack(Material.SAND);
-		meta = item.getItemMeta();
-		meta.setDisplayName("§aIle de Sable");
-		item.setItemMeta(meta);
-		inv.setItem(12, item);
-
-		item = new ItemStack(Material.VINE);
-		meta = item.getItemMeta();
-		meta.setDisplayName("§2Ile Jungle");
-		item.setItemMeta(meta);
-		inv.setItem(14, item);
-
-		item = new ItemStack(Material.TERRACOTTA);
-		meta = item.getItemMeta();
-		meta.setDisplayName("§6Ile Mesa");
-		item.setItemMeta(meta);
-		inv.setItem(24, item);
-
-		item = new ItemStack(Material.LILY_PAD);
-		meta = item.getItemMeta();
-		meta.setDisplayName("§2Ile des Marais");
-		item.setItemMeta(meta);
-		inv.setItem(16, item);
-
-		sp.p.openInventory(inv);
-	}
-
-	// MENU CHOISIR IS PAR DEFAUT
-
-
-	private static final MenuCreator islandsListMenu = new MenuCreator() {
-
-		@Override
-		public void onMenuClick(MenuClickEvent e) {
-			A a = ((A)e.data); // laisse
-			FacPlayer chosen = a.tracker.get(e.slot);
-			if(chosen==null)e.player.sendMessage("§cUne erreur est survenue lors du choix de l'île !");
-			else{
-				if(!a.force&&e.click==MenuClickEvent.ClickType.LEFT){
-					baseIslandOpen(chosen);
-				}else{
-					chosen.sp.setDefaultIS(chosen.is.facID);
-					e.player.closeInventory();
-					e.player.sendMessage("§aîle par défaut choisie avec succès !");
-				}
-			}
-		}
-	};
-
-	private static class A{
-		public HashMap<Integer, FacPlayer> tracker = new HashMap<>();
-		public boolean force;
-	}
-
-	public static void islandsListOpen(FacPlayer sp, boolean force){
-		A a = new A();
-		a.force = force;
-		String name;
-		if(force){
-			name = "§6Quelle île ?";
-			a.tracker.put(-1, null);
-		}
-		else name = "§6Liste de tes îles :";
-		Inventory inv = islandsListMenu.createInv(3, name, a);
-
-		int j = 10;
-		ArrayList<String> list;
-		for(FacPlayer link : sp.getIslands()){
-			ItemStack item = new ItemStack(Material.OAK_SAPLING);
-			ItemMeta meta = item.getItemMeta();
-			meta.setDisplayName("§aIle ");
-			list = new ArrayList<>();
-			list.add("§eID: "+link.is.facID.str());
-			if(link.is.getName()!=null)list.add("§eNom : "+link.is.getName());
-			list.add("§eRang: "+link.getName());
-			list.add("");
-			if(!force)list.add("§aClick gauche pour voir les informations de l'île !");
-			if(link.sp.getDefaultIS()==link){
-				list.add("§2île par défaut actuelle !");
-			}else{
-				if(force)list.add("§aClique pour définir en île par défaut !");
-				else list.add("§aClick droit pour définir en île par défaut !");
-			}
-			meta.setLore(list);
-			item.setItemMeta(meta);
-			inv.setItem(j, item);
-			a.tracker.put(j, link);
-			j+=2;
-		}
-
-		sp.p.openInventory(inv);
-	}
-
-	// MENU IS DE BASE DE L'ILE
+	// MENU DE BASE DE LA FACTION
 
 	private static final MenuCreator baseIslandMenu = new MenuCreator() {
 
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
-			FacPlayer link  = (FacPlayer)e.data;
+			FacPlayer fp  = (FacPlayer)e.data;
 			e.player.closeInventory();
 			switch(e.item.getType()){
 				case PLAYER_HEAD:{
-					manageTeamOpen(link);
+					manageTeamOpen(fp);
 					break;
 				}
-				case REDSTONE_BLOCK:{
-					upgradeOpen(link);
-					// A FAIRE
+				case OAK_DOOR:{
+					fp.getFaction().teleportHome(e.player);
 					break;
 				}
 				default:{
-					if(e.item.getType()==link.is.type.door){
-						link.is.teleportHome(e.player);
-						e.player.sendMessage("§eTu as été téléporté à ton île !");
-					}else e.player.sendMessage("§cCette option n'est pas encore prête !");
+					e.player.sendMessage("§cCette option n'est pas encore prête !");
 					break;
 				}
 			}
@@ -197,7 +50,7 @@ public class IsMenus {
 
 	public static void baseIslandOpen(FacPlayer link) {
 
-		Inventory inv = baseIslandMenu.createInv(5, "§6Menu principal de l'île :", link);
+		Inventory inv = baseIslandMenu.createInv(5, "§6Menu principal de la faction :", link);
 
 		ItemStack item = new ItemStack(Material.BLUE_STAINED_GLASS_PANE);
 		for (int i = 0; i < 45; i += 9) {
@@ -214,44 +67,31 @@ public class IsMenus {
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName("§6Informations");
 		ArrayList<String> a = new ArrayList<>();
-		a.add("§eID : §6" + link.is.facID.x + ";" + link.is.facID.z);
-		if(link.is.getName()!=null)a.add("§eNom : "+link.is.getName());
-		a.add("§eNiveau : §6" + link.is.getLevel());
-		a.add("§eBanque d'île : §6" + Utils.formatMoney(link.is.getBank()));
-		ArrayList<FacPlayer> members = link.is.getMembers();
+		a.add("§eID : §6" + link.getFaction().id);
+		if(link.getFaction().getName()!=null)a.add("§eNom : "+link.getFaction().getName());
+		a.add("§eBanque de la faction : §6" + Utils.formatMoney(link.getFaction().getBank()));
+		ArrayList<FacPlayer> members = link.getFaction().getMembers();
 		if(members.size()==1)a.add("§eAucune équipe !");
 		else a.add("§eÉquipe : §6"+members.size()+"§e membres");
 		a.add("§eRôle : §6"+TextUtils.firstLetterUpper(link.getRank().name));
-		a.add("§eNuméro personnel : §6" + (link.sp.getIslands().indexOf(link)+1));
 		meta.setLore(a);
 		item.setItemMeta(meta);
 		inv.setItem(4, item);
 
-		item = new ItemStack(link.is.type.door);
+		item = new ItemStack(Material.OAK_DOOR);
 		meta = item.getItemMeta();
-		meta.setDisplayName("§aSe téléporter à l'île");
+		meta.setDisplayName("§aSe téléporter au home");
 		item.setItemMeta(meta);
 		inv.setItem(19, item);
 
 		ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
 		SkullMeta smeta = (SkullMeta) skull.getItemMeta();
-		smeta.setDisplayName("§eVoir l'équipe de ton île");
+		smeta.setDisplayName("§eVoir l'équipe de ta faction");
 		skull.setItemMeta(smeta);
-		ItemUtils.placeSkullAsync(inv, 20, skull, link.sp.p);
+		ItemUtils.placeSkullAsync(inv, 20, skull, link.p);
 
-		item = new ItemStack(Material.BOOK);
-		meta = item.getItemMeta();
-		meta.setDisplayName("§6Challenges");
-		item.setItemMeta(meta);
-		inv.setItem(33, item);
 
-		item = new ItemStack(Material.REDSTONE_BLOCK);
-		meta = item.getItemMeta();
-		meta.setDisplayName("§6Améliorations de l'île");
-		item.setItemMeta(meta);
-		inv.setItem(34, item);
-
-		link.sp.p.openInventory(inv);
+		link.p.openInventory(inv);
 	}
 
 
@@ -271,7 +111,7 @@ public class IsMenus {
 		Inventory inv = manageTeamMenu.createInv(3, "§6Ton équipe :", link);
 
 		int i = 0;
-		for(FacPlayer ll : link.is.getSortedMembers()){
+		for(FacPlayer ll : link.getFaction().getMembers()){
 
 			ItemStack item = new ItemStack(Material.PLAYER_HEAD);
 			SkullMeta smeta = (SkullMeta) item.getItemMeta();
@@ -279,75 +119,15 @@ public class IsMenus {
 			smeta.setDisplayName(ll.getName());
 			if(ll.equals(link))smeta.setLore(Collections.singletonList("§aC'est toi !"));
 			item.setItemMeta(smeta);
-			ItemUtils.placeSkullAsync(inv, i, item, ll.sp.name);
+			ItemUtils.placeSkullAsync(inv, i, item, ll.name);
 			i++;
 		}
 
 		ItemBuilder item = new ItemBuilder(Material.WRITABLE_BOOK).name("§cRetour au menu précédent");
 		inv.setItem(26, item.build());
 
-		link.sp.p.openInventory(inv);
+		link.p.openInventory(inv);
 	}
 
-	private static final MenuCreator upgradeMenu = new MenuCreator() {
 
-		@Override
-		public void onMenuClick(MenuClickEvent e) {
-			FacPlayer link = (FacPlayer)e.data;
-			if(e.item.getType()==Material.WRITABLE_BOOK) baseIslandOpen(link);
-			else{
-				e.player.closeInventory();
-				Extensions[] list = Extensions.values();
-				Extensions u;
-				for(int i=0;i<list.length;i++){
-					u = list[i];
-					if(e.item.getType() == u.type){
-						if(link.is.getExtension()>=i){
-							e.player.sendMessage("§cTu as déja acquis cette extension !");
-							return;
-						}else if((link.is.getExtension()+1)!=i) {
-							e.player.sendMessage("§cTu dois d'abord acheter les autres extensions !");
-							return;
-						}else if(link.is.getLevel()<u.minlvl){
-							e.player.sendMessage("§cLe niveau de ton île est insuffisant ! Niveau demandé : §4"+u.minlvl+"§c. Niveau de ton île : §4"+link.is.getLevel());
-							return;
-						}
-						if(link.sp.getMoney()>=u.price)link.sp.withdrawMoney(u.price);
-						else if(link.is.getBank()>=u.price)link.is.withdrawBank(u.price);
-						else{
-							e.player.sendMessage("§cTu n'as pas assez de monnaie ! Monnaie demandée pour l'amélioration : §4"+u.price+"§c$");
-							return;
-						}
-						link.is.setExtension((byte) (link.is.getExtension()+1));
-						InstantFirework.explode(e.player.getLocation(), FireworkEffect.builder().withColor(Color.BLUE, Color.GREEN).withFade(Color.MAROON, Color.RED).flicker(true).build());
-						e.player.sendMessage("§aTon île à été améliorée avec succès ! :D");
-						return;
-					}
-				}
-			}
-		}
-	};
-
-	public static void upgradeOpen(FacPlayer link){
-		Inventory inv = upgradeMenu.createInv(4, "§6Amélioration de l'île :", link);
-
-
-		ItemBuilder item = new ItemBuilder(Material.PAPER).name("§cKeskecé ?").lore("§3Ceci te sert à améliorer la zone de construction de ton île.",
-				"§3Regarde les descriptions des 4 blocks ci dessous pour avoir les prix/prérequis pour les améliorations :)");
-		inv.setItem(13, item.build());
-
-		Extensions[] list = Extensions.values();
-		for(int i=0;i<list.length;i++){
-			item = new ItemBuilder(list[i].type).name(list[i].name).lore(list[i].lore);
-			if(link.is.getExtension()>=i){
-				item.fakeEnchant();
-			}
-			inv.setItem(list[i].slot, item.build());
-		}
-
-		item = new ItemBuilder(Material.WRITABLE_BOOK).name("§cRetour au menu précédent");
-		inv.setItem(35, item.build());
-
-		link.sp.p.openInventory(inv);
-	}
 }

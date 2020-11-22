@@ -4,7 +4,7 @@ import fr.entasia.apis.utils.PlayerUtils;
 import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.*;
-import fr.entasia.faccore.apis.Dimensions;
+import fr.entasia.faccore.apis.Dimension;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Creature;
@@ -136,19 +136,19 @@ public class BaseEvents implements Listener {
 	public void initEvent(WorldInitEvent e){
 		switch(e.getWorld().getName().toLowerCase()){
 			case "factions":
-				Dimensions.OVERWORLD.world = e.getWorld();
+				Dimension.OVERWORLD.world = e.getWorld();
 				break;
 			case "factions_nether":
-				Dimensions.NETHER.world = e.getWorld();
+				Dimension.NETHER.world = e.getWorld();
 				break;
 			case "factions_the_end":
-				Dimensions.END.world = e.getWorld();
+				Dimension.END.world = e.getWorld();
 				break;
 			default:
 				return;
 		}
 		Main.main.getLogger().info("loaded "+e.getWorld().getName());
-		for(Dimensions d : Dimensions.values()){
+		for(Dimension d : Dimension.values()){
 			if(d.world==null)return;
 		}
 		InternalAPI.onPostEnable();

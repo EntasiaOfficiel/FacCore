@@ -19,6 +19,7 @@ public class SetSpawnCommand implements CommandExecutor {
 			Utils.spawn = p.getLocation().getBlock().getLocation();
 
 			ConfigurationSection sec = Main.main.getConfig().getConfigurationSection("spawn");
+			assert sec != null;
 			sec.set("x", Utils.spawn.getBlockX());
 			sec.set("y", Utils.spawn.getBlockY());
 			sec.set("z", Utils.spawn.getBlockZ());

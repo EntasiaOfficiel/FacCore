@@ -41,13 +41,11 @@ public class Main extends JavaPlugin {
 
 			getServer().getPluginManager().registerEvents(new BaseEvents(), this);
 			getServer().getPluginManager().registerEvents(new ProtectionEvents(), this);
-			getServer().getPluginManager().registerEvents(new DimensionEvents(), this);
-			getServer().getPluginManager().registerEvents(new ChatEvents(), this);
-			getServer().getPluginManager().registerEvents(new MiningEvents(), this);
 
-			getCommand("skycore").setExecutor(new SkyCoreCommand());
-			getCommand("isadmin").setExecutor(new IsAdminCommand());
-			getCommand("setspawn").setExecutor(new SetSpawnCommand());
+			getCommand("fadmin").setExecutor(new FacAdminCommand());
+			getCommand("f").setExecutor(new FacCommand());
+
+			getCommand("faccore").setExecutor(new FacCoreCommand());
 			getCommand("setspawn").setExecutor(new SetSpawnCommand());
 			getCommand("masteredit").setExecutor(new MasterEditCommand());
 
@@ -56,7 +54,6 @@ public class Main extends JavaPlugin {
 			getCommand("pay").setExecutor(new PayCommand());
 			getCommand("eco").setExecutor(new EcoCommand());
 			getCommand("bin").setExecutor(new BinCommand());
-			getCommand("is").setExecutor(new IsCommand());
 			getCommand("spawn").setExecutor(new SpawnCommand());
 			getCommand("rank").setExecutor(new RankCommand());
 
@@ -69,7 +66,7 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-	public static void loadConfigs() throws Exception {
+	public static void loadConfigs() throws Throwable {
 		main.saveDefaultConfig();
 		main.reloadConfig();
 

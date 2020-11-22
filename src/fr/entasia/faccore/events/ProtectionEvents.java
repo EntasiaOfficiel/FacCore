@@ -47,7 +47,7 @@ public class ProtectionEvents implements Listener { // TODO A RVOIR TOTALEMENT
 	public static void onDamage(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player){
 			Player p = (Player) e.getEntity();
-			if (Dimensions.isGameWorld(p.getWorld())){
+			if (Dimension.isGameWorld(p.getWorld())){
 				if (e.getDamager() instanceof Player) {
 					e.setCancelled(true);
 					return;
@@ -71,7 +71,7 @@ public class ProtectionEvents implements Listener { // TODO A RVOIR TOTALEMENT
 	@EventHandler
 	public void interact(PlayerInteractEvent e){
 		Player p = e.getPlayer();
-		if(Dimensions.isGameWorld(p.getWorld())&&e.hasBlock()){
+		if(Dimension.isGameWorld(p.getWorld())&&e.hasBlock()){
 			if(e.getAction()==Action.RIGHT_CLICK_BLOCK) {
 				Block b = e.getClickedBlock();
 				Material m = b.getType();
@@ -97,20 +97,15 @@ public class ProtectionEvents implements Listener { // TODO A RVOIR TOTALEMENT
 
 	private static boolean isBlockDenied(Player p, Block b){
 		if(Utils.masterEditors.contains(p)&&p.getGameMode()==GameMode.CREATIVE)return false;
-		if(Dimensions.isGameWorld(p.getWorld())) {
-			Faction fac = BaseAPI.getIsland(b.getLocation());
+		if(Dimension.isGameWorld(p.getWorld())) {
+			Faction fac = BaseAPI.getFaction(b.getLocation());
 			if (fac != null) {
 				FacPlayer fp = fac.getMember(p.getUniqueId());
-				if (fp == null) p.sendMessage("§cTu n'est pas membre de cette ile !");
+				if (fp == null) p.sendMessage("§cTu n'es pas membre de cette faction !");
 				else {
-					if (fac.hasDimension(Dimensions.getDimension(p.getWorld()))) {
-						int m = fac.facID.distanceFromIS(b.getLocation());
-						if ((fac.getExtension() + 1) * 50 < m) {
-							p.sendMessage("§cL'extension de ton ile n'est pas suffisante !");
-						} else if (fp.getRank() == MemberRank.RECRUE && containers.contains(b.getType())) {
-							p.sendMessage("§cTu es seulement une recrue sur cette ile ! Tu ne peux pas intéragir avec les containers");
-						} else return false;
-					} else p.sendMessage("§Ton île n'a pas encore débloqué cette dimension ! Utilise un portail pour la débloquer");
+					if (fp.getRank() == MemberRank.RECRUE && containers.contains(b.getType())) {
+						p.sendMessage("§cTu es seulement une recrue sur cette ile ! Tu ne peux pas intéragir avec les containers");
+					} else return false;
 				}
 			}
 		}
@@ -146,7 +141,7 @@ public class ProtectionEvents implements Listener { // TODO A RVOIR TOTALEMENT
 
 	@EventHandler
 	public void WitherEatBlocks(EntityChangeBlockEvent e) {
-		if(Dimensions.isGameWorld(e.getBlock().getWorld())){
+		if(Dimension.isGameWorld(e.getBlock().getWorld())){
 			if(e.getEntityType()== EntityType.WITHER){
 				e.setCancelled(true);
 			}
@@ -155,34 +150,25 @@ public class ProtectionEvents implements Listener { // TODO A RVOIR TOTALEMENT
 
 
 
-	private static String checkIs(Faction is, Player p){ // temporaire ? ou pas
-		if(is.getMember(p.getUniqueId())==null){
-			return "l'ile de §6"+is.getOwner().sp.name+"§f";
+	private static String checkIs(Faction f, Player p){ // temporaire ? ou pas
+		if(f.getMember(p.getUniqueId())==null){
+			return "La faction §6"+f.getName()+"§f";
 		}else{
-			return "ton ile";
+			return "Ta faction";
 		}
 	}
 
 	@EventHandler
 	public void onMove(PlayerMoveEvent e){
 		Player p = e.getPlayer();
-		if(Dimensions.isGameWorld(p.getWorld())){
-			Faction fr = BaseAPI.getIsland(e.getFrom());
-			Faction to = BaseAPI.getIsland(e.getTo());
-			if(fr==to){ // on est sur la même île
-				if(fr!=null){
-					int ext = (fr.getExtension()+1)*50;
-					int m1 = fr.facID.distanceFromIS(e.getFrom());
-					int m2 = fr.facID.distanceFromIS(e.getTo());
-					if(m1<ext){
-						if(m2>=ext){
-							e.getPlayer().sendActionBar("§fTu es sorti de la zone de "+ checkIs(fr, p)+" !");
-						}
-					}else if (m2<ext){
-						e.getPlayer().sendActionBar("§fTu es rentré dans la zone de "+ checkIs(fr, e.getPlayer())+" !");
-					}
-				}
-			}else{
+		if(Dimension.isGameWorld(p.getWorld())){
+
+
+
+
+			Faction fr = BaseAPI.getFaction(e.getFrom());
+			Faction to = BaseAPI.getFaction(e.getTo());
+			if(fr!=to){ // changement de Faction
 				if (to == null) {
 					e.getPlayer().sendActionBar("§fTu es sorti de "+ checkIs(fr, p)+" !");
 				} else {

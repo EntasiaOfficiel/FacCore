@@ -1,19 +1,18 @@
-name: SkyCore
+name: FacCore
 depend: [Libraries]
-loadbefore: [Multiverse-Core] # il a besoin de charger le VoidGenerator
 version: '-1'
-main: fr.entasia.skycore.Main
+main: fr.entasia.faccore.Main
 api-version: '1.15'
 commands:
-  skycore:
+  faccore:
 
   setspawn:
 
   masteredit:
     aliases: [buildtoggle]
 
-  isadmin:
-    aliases: [adminis]
+  fadmin:
+    aliases: [facadmin]
 
 
   bin:
@@ -21,8 +20,8 @@ commands:
 
   spawn:
 
-  is:
-    aliases: [island, islands, ile, iles]
+  f:
+    aliases: [fac, faction, factions]
 
   rank:
 

@@ -5,6 +5,8 @@ import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.objs.FacException;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
@@ -28,6 +30,17 @@ public class BaseAPI {
 		return null;
 	}
 
+
+	public static Faction getFaction(Location loc){
+		Chunk c = loc.getChunk();
+		for(Faction lf : Utils.factionCache){
+			if(lf.chunks.contains(c)){ //TODO convertir chunk en chunkID
+				return lf;
+			}
+		}
+		return null;
+	}
+
 	public static Faction getFaction(UUID owner) {
 		for(Faction lf : Utils.factionCache){
 			if(lf.owner.uuid==owner)return lf;
@@ -35,12 +48,12 @@ public class BaseAPI {
 		return null;
 	}
 
-	public static FacPlayer getOnlineFP(UUID uuid){ // TODO FAIRE METADATA
+	public static FacPlayer getOnlineFP(UUID uuid){
 		Player p = Bukkit.getPlayer(uuid);
 		if(p==null)return null;
 		else return getOnlineFP(p);
 	}
-	public static FacPlayer getOnlineFP(Player p){ // TODO FAIRE METADATA
+	public static FacPlayer getOnlineFP(Player p){
 		List<MetadataValue> meta = p.getMetadata("FacPlayer");
 		if(meta.size()==0)return null;
 		else return (FacPlayer) meta.get(0).value();
@@ -68,19 +81,20 @@ public class BaseAPI {
 
 	public static Faction registerFaction(FacPlayer fp) throws Exception {
 		if(fp.faction!=null)return null;
-		Faction fac = new Faction(fp);
 
 		int i=0;
+		int facID;
 		loops:
 		while(true){
 			i++;
 			if(i==20)throw new FacException("Internal error while generating ID : too much rounds needed ! (Too much factions ?)");
-			fac.id = Main.r.nextInt();
+			facID = Main.r.nextInt();
 			for(Faction lf : Utils.factionCache){
-				if(lf.id==fac.id)continue loops;
+				if(lf.id==facID)continue loops;
 			}
 			break;
 		}
+		Faction fac = new Faction(facID, fp);
 
 		Main.sql.fastUpdate("INSERT INTO factions (owner) VALUES (?)", fp.uuid);
 		Main.sql.fastUpdate("UPDATE fac_players SET faction=?, rank=? WHERE uuid=?", MemberRank.CHEF.id, fp.uuid);
@@ -114,7 +128,7 @@ public class BaseAPI {
 		if(a==-1)return false;
 
 		playerCache.remove(sp);
-		if(sp.isOnline())sp.p.kickPlayer("§cTon compte Skyblock à été supprimé. Merci de te reconnecter pour procéder à la regénération d'un compte");
+		if(sp.isOnline())sp.p.kickPlayer("§cTon compte Faction à été supprimé. Merci de te reconnecter pour procéder à la regénération d'un compte");
 		return true;
 	}
 }

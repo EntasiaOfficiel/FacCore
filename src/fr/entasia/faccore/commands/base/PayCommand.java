@@ -27,7 +27,7 @@ public class PayCommand implements CommandExecutor {
 				if (money < 0) money = -money;
 				FacPlayer sp = BaseAPI.getOnlineFP(((Player) sender));
 				if (sp == null){
-					sender.sendMessage("§cUne erreur s'est produite lors du chargement du ton profil Skyblock ! Contacte un Membre du Staff");
+					sender.sendMessage("§cUne erreur s'est produite lors du chargement du ton profil Faction ! Contacte un Membre du Staff");
 				} else {
 					if (sp.getMoney() < money){
 						sender.sendMessage("§cTu n'as pas assez d'argent ! Valeur actuelle : " + sp.getMoney());

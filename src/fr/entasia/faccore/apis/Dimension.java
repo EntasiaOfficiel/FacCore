@@ -2,7 +2,7 @@ package fr.entasia.faccore.apis;
 
 import org.bukkit.World;
 
-public enum Dimensions {
+public enum Dimension {
 	OVERWORLD(0),
 	NETHER(1),
 	END(2);
@@ -10,19 +10,19 @@ public enum Dimensions {
 	public int id;
 	public World world;
 
-	Dimensions(int id){
+	Dimension(int id){
 		this.id = id;
 	}
 	
-	public static Dimensions getDimension(World w){
-		for(Dimensions d : Dimensions.values()){
+	public static Dimension getDimension(World w){
+		for(Dimension d : Dimension.values()){
 			if(d.world==w)return d;
 		}
 		return null;
 	}
 
 	public static boolean isGameWorld(World w){
-		for(Dimensions d : Dimensions.values()){
+		for(Dimension d : Dimension.values()){
 			if(d.world!=null&&d.world==w)return true;
 		}
 		return false;

@@ -18,13 +18,17 @@ import java.util.UUID;
 
 public class Faction {
 
-	protected int id;
+	public final int id;
 	protected String name=null;
 	protected Location home;
 	protected FacPlayer owner;
 	protected ArrayList<FacPlayer> members = new ArrayList<>();
 	protected ArrayList<FacPlayer> invites = new ArrayList<>();
+	protected ArrayList<ChunkID> chunks = new ArrayList<>();
 
+
+
+	protected float power=0;
 	protected long bank=0;
 
 	// online stuff
@@ -33,13 +37,17 @@ public class Faction {
 
 	// CONSTRUCTEURS
 
-	public Faction() { }
+	public Faction(int id) {
+		this.id = id;
+	}
 
-	public Faction(FacPlayer fp){
+	public Faction(int id, FacPlayer fp){
+		this.id = id;
 		fp.faction = this;
 		owner = fp;
 		fp.rank = MemberRank.CHEF;
 		members.add(fp);
+		ChunkSnapshot
 	}
 
 
@@ -84,7 +92,7 @@ public class Faction {
 	public void setHome(Location home){
 		this.home = home;
 			Main.sql.fastUpdate("UPDATE factions SET home_w=?, home_x=?, home_y=?, home_z=? where faction=?",
-					Dimensions.getDimension(home.getWorld()).id, home.getBlockX(), home.getBlockY(), home.getBlockZ(), id);
+					Dimension.getDimension(home.getWorld()).id, home.getBlockX(), home.getBlockY(), home.getBlockZ(), id);
 	}
 
 
@@ -109,16 +117,6 @@ public class Faction {
 		return null;
 	}
 
-	/*
-	if(fp.faction!=null)return false;
-
-		fp.faction = fac;
-		fp.rank = rank;
-		fac.members.add(fp);
-
-
-	 */
-
 	public boolean addMember(FacPlayer fp) {
 		if (fp.faction != null) return false;
 		if (getMember(fp.uuid) != null) return false;
@@ -128,19 +126,16 @@ public class Faction {
 		return true;
 	}
 
-//	public boolean reRankMember(ISPLink link, MemberRank rank){
-//		if(rank==MemberRank.DEFAULT) InternalAPI.warn("Utilise removeMember() pour supprimer un joueur de l'île !", true);
-//		else if(link.is.equals(this)){
-//			link.setRank(rank);
-//			if(rank==MemberRank.CHEF) {
-//				owner.setRank(MemberRank.ADJOINT);
-//				owner = link;
-//			}
-//			if(InternalAPI.SQLEnabled())Main.sql.fastUpdate("UPDATE sky_pis SET rank = ? WHERE uuid=? and x=? and z=?", rank.id, link.sp.uuid, link.is.isid.x, link.is.isid.z);
-//			return true;
-//		} else InternalAPI.warn("L'île fournie ne correspond pas", true);
-//		return false;
-//	}
+
+	public void claim(){
+		// TODO POWER CHECK
+
+	}
+
+	public void unClaim(){
+		// TODO POWER
+
+	}
 
 
 	public ArrayList<FacPlayer> getInvites(){

@@ -4,7 +4,7 @@ import fr.entasia.apis.other.ChatComponent;
 import fr.entasia.apis.other.CodePasser;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.*;
-import fr.entasia.faccore.apis.Dimensions;
+import fr.entasia.faccore.apis.Dimension;
 import fr.entasia.faccore.invs.IsMenus;
 import fr.entasia.faccore.invs.OtherMenus;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 import static fr.entasia.faccore.commands.base.IsCmdUtils.*;
 
-public class IsCommand implements CommandExecutor {
+public class FacCommand implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 		if(!(sender instanceof Player))return true;
@@ -423,7 +423,7 @@ public class IsCommand implements CommandExecutor {
 							p.sendMessage("§cMet un joueur en argument !");
 							return true;
 						}
-						if (link.sp.p.getWorld() != Dimensions.OVERWORLD.world) {
+						if (link.sp.p.getWorld() != Dimension.OVERWORLD.world) {
 							p.sendMessage("§cTu n'es pas dans l'overworld des îles !");
 						}
 						Faction is = BaseAPI.getIsland(link.sp.p.getLocation());
@@ -495,7 +495,7 @@ public class IsCommand implements CommandExecutor {
 
 
 					case "delete": {
-						if (link.sp.p.getWorld() != Dimensions.OVERWORLD.world) {
+						if (link.sp.p.getWorld() != Dimension.OVERWORLD.world) {
 							p.sendMessage("§cTu n'es pas dans l'overworld des îles !");
 							return true;
 						}

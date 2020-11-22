@@ -69,8 +69,7 @@ public class InternalAPI {
 
 		ResultSet rs = Main.sql.fastSelectUnsafe("SELECT * FROM factions");
 		while(rs.next()){ // BASEISLAND
-			fac = new Faction();
-			fac.id = rs.getInt("id");
+			fac = new Faction(rs.getInt("id"));
 
 			fac.name = rs.getString("name");
 			fac.bank = rs.getLong("bank");
@@ -92,7 +91,7 @@ public class InternalAPI {
 			if(fac.id!=facID)fac = BaseAPI.getFaction(facID);
 
 			if(fac==null){
-				Main.main.getLogger().severe("Tentative de récupération d'une île non existante ! (par membre)");
+				Main.main.getLogger().severe("Tentative de récupération d'une faction non existante ! (par membre)");
 				Main.main.getLogger().severe("UUID="+rs.getString("uuid"));
 				Main.main.getLogger().severe("ISID="+ facID);
 				Main.main.getLogger().severe("RANK="+fp.rank);
@@ -133,10 +132,10 @@ public class InternalAPI {
 
 	public static FacPlayer getArgSP(CommandSender p, String str, boolean exact) {
 		UUID uuid = parseArg(str, exact);
-		if(uuid==null)p.sendMessage("§cCe joueur n'existe pas ou n'est pas inscrit en Skyblock !");
+		if(uuid==null)p.sendMessage("§cCe joueur n'existe pas ou n'est pas inscrit en Faction !");
 		else{
 			FacPlayer sp = BaseAPI.getFacPlayer(uuid);
-			if(sp==null)p.sendMessage("§cCe joueur n'existe pas ou n'est pas inscrit en Skyblock !");
+			if(sp==null)p.sendMessage("§cCe joueur n'existe pas ou n'est pas inscrit en Faction !");
 			else return sp;
 		}
 		return null;

@@ -2,13 +2,13 @@ package fr.entasia.faccore.commands.manage;
 
 import fr.entasia.apis.other.CodePasser;
 import fr.entasia.faccore.apis.*;
-import fr.entasia.faccore.apis.Dimensions;
+import fr.entasia.faccore.apis.Dimension;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class IsAdminCommand implements CommandExecutor {
+public class FacAdminCommand implements CommandExecutor {
 
 	private static void args(CommandSender sender){
 		sender.sendMessage("§cArguments disponibles : ");
@@ -85,10 +85,10 @@ public class IsAdminCommand implements CommandExecutor {
 					case "infois": {
 						FacID facID;
 						if (args.length == 1) {
-							if (Dimensions.isGameWorld(p.getWorld())) {
+							if (Dimension.isGameWorld(p.getWorld())) {
 								facID = CooManager.getIslandID(p.getLocation().getBlockX(), p.getLocation().getBlockZ());
 							} else{
-								p.sendMessage("§cTu n'es pas dans un monde Skyblock !");
+								p.sendMessage("§cTu n'es pas dans un monde Faction !");
 								return true;
 							}
 						} else facID = FacID.parse(args[1]);
@@ -110,8 +110,8 @@ public class IsAdminCommand implements CommandExecutor {
 								p.sendMessage("§7Malus : §b" + is.getMalus());
 								p.sendMessage("§7Niveau : §b" + is.getLevel());
 								p.sendMessage("§8Dimensions :");
-								p.sendMessage("§7Nether : §b"+is.hasDimension(Dimensions.NETHER));
-								p.sendMessage("§7End : §b"+is.hasDimension(Dimensions.END));
+								p.sendMessage("§7Nether : §b"+is.hasDimension(Dimension.NETHER));
+								p.sendMessage("§7End : §b"+is.hasDimension(Dimension.END));
 								p.sendMessage("§8Autres :");
 								p.sendMessage("§7Extension : §bNiveau "+(is.getExtension()+1)+" §7("+is.getExtension()+"/3)");
 								p.sendMessage("§7Mineurs : §b"+is.autominers.size());
