@@ -12,6 +12,8 @@ public class FacPlayer {
 	public final UUID uuid;
 	public final String name;
 	public Player p;
+	public boolean facChat = false;
+
 
 	protected Faction faction;
 	protected MemberRank rank;

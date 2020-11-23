@@ -69,29 +69,17 @@ public class FacAdminCommand implements CommandExecutor {
 						break;
 					}
 
-					case "resetgen":{
-						if(args.length==1)p.sendMessage("§cMet un pseudo/UUID !");
-						else {
-							FacPlayer target = InternalAPI.getArgSP(p, args[1], false);
-							if (target != null) {
-								target.setLastGenerated(0);
-								p.sendMessage("§aSuccès !");
-							}
-						}
-						break;
-					}
-
-					case "infois": {
-						FacID facID;
+					case "infofac": {
+						Faction fac;
 						if (args.length == 1) {
 							if (Dimension.isGameWorld(p.getWorld())) {
-								facID = CooManager.getIslandID(p.getLocation().getBlockX(), p.getLocation().getBlockZ());
+								fac = BaseAPI.getFaction(p.getLocation());
 							} else{
 								p.sendMessage("§cTu n'es pas dans un monde Faction !");
 								return true;
 							}
-						} else facID = FacID.parse(args[1]);
-						if (facID == null) p.sendMessage("§cID d'ile invalide !");
+						} else fac = BaseAPI.getFaction(Integer.valueOf(args[1]));
+						if (fac == null) p.sendMessage("§cFaction invalide !");
 						else {
 							Faction is = BaseAPI.getIsland(facID);
 							if (is == null) p.sendMessage("§cIle non existante !");
@@ -146,7 +134,7 @@ public class FacAdminCommand implements CommandExecutor {
 									BaseAPI.deleteFaction(is, new CodePasser.Arg<Boolean>() {
 										@Override
 										public void run(Boolean err) {
-											if(err)p.sendMessage("§cUne erreur s'est produite lors de la suppression de l'île !");
+											if(err)p.sendMessage("§cUne erreur s'est produite lors de la suppression de la faction !");
 											else p.sendMessage("§cîle supprimé avec succès !");
 										}
 									});
@@ -171,7 +159,7 @@ public class FacAdminCommand implements CommandExecutor {
 							return true;
 						}
 						is.setExtension(range);
-						p.sendMessage("§aNouvelle extension de l'île définie à "+range+" !");
+						p.sendMessage("§aNouvelle extension de la faction définie à "+range+" !");
 						break;
 					}
 					case "tp":{
@@ -225,7 +213,7 @@ public class FacAdminCommand implements CommandExecutor {
 												}
 												try{
 													MemberRank r = MemberRank.valueOf(args[3].toUpperCase());
-													if(r==MemberRank.DEFAULT)p.sendMessage("§cUtilise /is kick pour exclure un membre de l'île !");
+													if(r==MemberRank.DEFAULT)p.sendMessage("§cUtilise /is kick pour exclure un membre de la faction !");
 													else{
 														byte ret = targetLink.setRank(r);
 														if(ret==0)p.sendMessage("§aSuccès !");

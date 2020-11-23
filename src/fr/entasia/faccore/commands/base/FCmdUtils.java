@@ -68,7 +68,7 @@ public class FCmdUtils {
 	protected static HashMap<Player, ConfirmObj> confirmPassOwner = new HashMap<>();
 
 	protected static FacPlayer argTeamCheck(FacPlayer fp, String[] args){
-		if (fp.getRank().id < MemberRank.ADJOINT.id) fp.p.sendMessage("§cTu dois être au minimum adjoint pour gérer l'équipe de cette île !");
+		if (fp.getRank().id < MemberRank.ADJOINT.id) fp.p.sendMessage("§cTu dois être au minimum adjoint pour gérer l'équipe de cette faction !");
 		else {
 			if (args.length < 2) fp.p.sendMessage("§cMet un joueur en argument !");
 			else {
