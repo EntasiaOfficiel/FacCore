@@ -97,13 +97,17 @@ public class Faction {
 		trySetHolos();
 	}
 
-	public void setHome(Location home){
+	public byte setHome(Location home){
 		this.home = home;
 
-		long l = Block.getBlockKey(0x7FFFFFF, 255, 0x7FFFFFF);
-		l |= ((long) Dimension.get(home.getWorld()).id << 62); // injected
+		Dimension dim = Dimension.get(home.getWorld());
+		if(dim==null)return 1;
 
-		Main.sql.fastUpdate("UPDATE factions SET home=?, where faction=?", Dimension.get(home.getWorld()).id, l, id);
+		long key = Block.getBlockKey(0x7FFFFFF, 255, 0x7FFFFFF);
+		key |= ((long) dim.id << 62); // injected
+
+		Main.sql.fastUpdate("UPDATE factions SET home=?, where faction=?", Dimension.get(home.getWorld()).id, key, id);
+		return 0;
 	}
 
 
@@ -147,14 +151,14 @@ public class Faction {
 		if(claims.contains(cid))return 1;
 
 		claims.add(cid);
-		Main.sql.fastUpdate("INSERT INTO fac_claims (faction, dimension, x, y) VALUES (?, ?, ?, ?)", id, cid.dim, cid.x, cid.z);
+		Main.sql.fastUpdate("INSERT INTO fac_claims (faction, key) VALUES (?, ?)", id, cid.getKey());
 		return 0;
 	}
 
 	public byte unclaim(ChunkID cid){
 		// TODO POWER
 		if(claims.remove(cid)){
-			Main.sql.fastUpdate("DELETE FROM fac_claims WHERE dim=? AND x=? AND z=?", cid.dim, cid.x, cid.z);
+			Main.sql.fastUpdate("DELETE FROM fac_claims WHERE faction=? AND key=?", id, cid.getKey());
 			return 0;
 		}
 		else return 1;

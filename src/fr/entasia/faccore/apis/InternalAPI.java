@@ -102,12 +102,12 @@ public class InternalAPI {
 			fac.name = rs.getString("name");
 			fac.bank = rs.getLong("bank");
 
-			long l = rs.getLong("home");
-			if(l!=0){
-				Dimension dim = Dimension.get((int) (l>>>62));
+			long key = rs.getLong("home");
+			if(key!=0){
+				Dimension dim = Dimension.get((int) (key>>>62));
 				if(dim==null)return;
-				l &= ((long) 0 << 62); // delete injection
-				fac.home = new Location(dim.world, Block.getBlockKeyX(l), Block.getBlockKeyY(l), Block.getBlockKeyZ(l));
+				key &= ~((long) 0b11 << 62); // delete injection
+				fac.home = new Location(dim.world, Block.getBlockKeyX(key), Block.getBlockKeyY(key), Block.getBlockKeyZ(key));
 			}
 
 			Utils.factionCache.add(fac);
@@ -118,7 +118,7 @@ public class InternalAPI {
 			facID = rs.getInt("faction");
 			if(facID!=fac.id)fac = BaseAPI.getFaction(facID);
 
-			fac.claims.add(new ChunkID(Dimension.get(rs.getInt("dimension")), rs.getInt("x"), rs.getInt("z")));
+			fac.claims.add(new ChunkID(rs.getLong("key")));
 		}
 
 		rs = Main.sql.connection.prepareStatement("SELECT global.name, sky_players.* from sky_players INNER JOIN global ON sky_players.uuid = global.uuid").executeQuery();
