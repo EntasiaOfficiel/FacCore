@@ -11,6 +11,7 @@ import fr.entasia.faccore.objs.RankTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -100,6 +101,14 @@ public class InternalAPI {
 
 			fac.name = rs.getString("name");
 			fac.bank = rs.getLong("bank");
+
+			long l = rs.getLong("home");
+			if(l!=0){
+				Dimension dim = Dimension.get((int) (l>>>62));
+				if(dim==null)return;
+				l &= ((long) 0 << 62); // delete injection
+				fac.home = new Location(dim.world, Block.getBlockKeyX(l), Block.getBlockKeyY(l), Block.getBlockKeyZ(l));
+			}
 
 			Utils.factionCache.add(fac);
 		}

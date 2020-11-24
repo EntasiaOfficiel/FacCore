@@ -6,6 +6,7 @@ import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -98,8 +99,11 @@ public class Faction {
 
 	public void setHome(Location home){
 		this.home = home;
-			Main.sql.fastUpdate("UPDATE factions SET home_w=?, home_x=?, home_y=?, home_z=? where faction=?",
-					Dimension.get(home.getWorld()).id, home.getBlockX(), home.getBlockY(), home.getBlockZ(), id);
+
+		long l = Block.getBlockKey(0x7FFFFFF, 255, 0x7FFFFFF);
+		l |= ((long) Dimension.get(home.getWorld()).id << 62); // injected
+
+		Main.sql.fastUpdate("UPDATE factions SET home=?, where faction=?", Dimension.get(home.getWorld()).id, l, id);
 	}
 
 
