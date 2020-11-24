@@ -219,9 +219,20 @@ public class FacCommand implements CommandExecutor {
 							return true;
 						}
 						String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-						if (fac.setName(name)) p.sendMessage("§aNouveau nom de ta faction : §d" + name);
-						else
-							p.sendMessage("§cCe nom est trop grand ! Maximum : 20 caractères (" + name.length() + " actuellement)");
+						switch(fac.setName(name)){
+							case 0:{
+								p.sendMessage("§aNouveau nom de ta faction : §d" + name);
+								break;
+							}
+							case 1:{
+								p.sendMessage("§cUne erreur s'est produite ! Peut-être que ce nom est déja utilisé par une autre faction ?");
+								break;
+							}
+							case 2:{
+								p.sendMessage("§cCe nom est trop long ! Le maximum est de 20 caractères");
+								break;
+							}
+						}
 						break;
 					}
 

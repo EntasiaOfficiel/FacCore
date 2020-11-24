@@ -77,12 +77,12 @@ public class Faction {
 		return name;
 	}
 
-	public boolean setName(String name){
-		if(name.length()>20)return false;
+	public byte setName(String name){
+		if(name.length()>20)return 2;
+		if(Main.sql.fastUpdate("UPDATE factions SET name=? WHERE faction=?", name, id)==-1)return 1;
 		this.name = name;
 		setHoloName();
-		Main.sql.fastUpdate("UPDATE factions SET name=? WHERE faction=?", name, id);
-		return true;
+		return 0;
 	}
 
 
