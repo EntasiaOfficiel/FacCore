@@ -151,14 +151,14 @@ public class Faction {
 		if(claims.contains(cid))return 1;
 
 		claims.add(cid);
-		Main.sql.fastUpdate("INSERT INTO fac_claims (faction, key) VALUES (?, ?)", id, cid.getKey());
+		Main.sql.fastUpdate("INSERT INTO fac_claims (faction, loc) VALUES (?, ?)", id, cid.getKey());
 		return 0;
 	}
 
 	public byte unclaim(ChunkID cid){
 		// TODO POWER
 		if(claims.remove(cid)){
-			Main.sql.fastUpdate("DELETE FROM fac_claims WHERE faction=? AND key=?", id, cid.getKey());
+			Main.sql.fastUpdate("DELETE FROM fac_claims WHERE faction=? AND loc=?", id, cid.getKey());
 			return 0;
 		}
 		else return 1;

@@ -118,7 +118,7 @@ public class InternalAPI {
 			facID = rs.getInt("faction");
 			if(facID!=fac.id)fac = BaseAPI.getFaction(facID);
 
-			fac.claims.add(new ChunkID(rs.getLong("key")));
+			fac.claims.add(new ChunkID(rs.getLong("loc")));
 		}
 
 		rs = Main.sql.connection.prepareStatement("SELECT global.name, sky_players.* from sky_players INNER JOIN global ON sky_players.uuid = global.uuid").executeQuery();
