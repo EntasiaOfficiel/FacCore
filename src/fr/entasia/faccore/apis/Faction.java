@@ -79,7 +79,7 @@ public class Faction {
 
 	public byte setName(String name){
 		if(name.length()>20)return 2;
-		if(Main.sql.fastUpdate("UPDATE factions SET name=? WHERE faction=?", name, id)==-1)return 1;
+		if(Main.sql.fastUpdate("UPDATE factions SET name=? WHERE id=?", name, id)==-1)return 1;
 		this.name = name;
 		setHoloName();
 		return 0;
@@ -106,7 +106,7 @@ public class Faction {
 		long key = Block.getBlockKey(0x7FFFFFF, 255, 0x7FFFFFF);
 		key |= ((long) dim.id << 62); // injected
 
-		Main.sql.fastUpdate("UPDATE factions SET home=?, where faction=?", Dimension.get(home.getWorld()).id, key, id);
+		Main.sql.fastUpdate("UPDATE factions SET home=? WHERE id=?", key, id);
 		return 0;
 	}
 
@@ -244,6 +244,7 @@ public class Faction {
 	}
 
 	protected void setHoloName(){
+		trySetHolos();
 		if(holo[0]==null) holo[0] = createAM(0);
 		String n;
 		if(name==null)n = "§2Faction de §a"+owner.name;
@@ -252,6 +253,7 @@ public class Faction {
 	}
 
 	protected void setHoloBank(){
+		trySetHolos();
 		if(holo[1]==null) holo[1] = createAM(1);
 		holo[1].setCustomName("§eBanque : §6"+ Utils.formatMoney(bank));
 	}

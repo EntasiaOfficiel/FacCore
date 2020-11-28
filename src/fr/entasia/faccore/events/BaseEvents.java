@@ -3,7 +3,9 @@ package fr.entasia.faccore.events;
 import fr.entasia.apis.utils.PlayerUtils;
 import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
-import fr.entasia.faccore.apis.*;
+import fr.entasia.faccore.apis.BaseAPI;
+import fr.entasia.faccore.apis.FacPlayer;
+import fr.entasia.faccore.apis.OthersAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Creature;
@@ -20,7 +22,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,24 +31,22 @@ public class BaseEvents implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onJoin(PlayerJoinEvent e) {
-		if(InternalAPI.isFullyEnabled()){
-			try{
-				FacPlayer fp = BaseAPI.getFacPlayer(e.getPlayer().getUniqueId());
-				if (fp==null) {
-					fp = BaseAPI.registerFacPlayer(e.getPlayer());
-					Bukkit.broadcastMessage("§3Bienvenue à §7" + e.getPlayer().getDisplayName() + "§63sur le Factions ! Souhaitons-lui la bienvenue !");
-				}
-				fp.p = e.getPlayer();
-				fp.p.setMetadata("FacPlayer", new FixedMetadataValue(Main.main, fp));
-
-				if(fp.getFaction()!=null&&fp.getFaction().getHome()!=null)fp.p.teleport(fp.getFaction().getHome());
-				else fp.p.teleport(Utils.spawn);
-
-			}catch(Exception e2){
-				e2.printStackTrace();
-				e.getPlayer().kickPlayer("§c): Une erreur est survenue lors de la lecture de ton profil Factions ! Contacte un Membre du Staff");
+		try {
+			FacPlayer fp = BaseAPI.getFacPlayer(e.getPlayer().getUniqueId());
+			if (fp == null) {
+				fp = BaseAPI.registerFacPlayer(e.getPlayer());
+				Bukkit.broadcastMessage("§3Bienvenue à §7" + e.getPlayer().getDisplayName() + "§6 sur le Factions ! Souhaitons-lui la bienvenue !");
 			}
-		}else e.getPlayer().kickPlayer("§cLe Post-Loading du plugin Factions n'est pas terminé ! Si tu ne peux pas te connecter dans une minute, contacte un Membre du Staff");
+			fp.p = e.getPlayer();
+			fp.p.setMetadata("FacPlayer", new FixedMetadataValue(Main.main, fp));
+
+			if (fp.getFaction() != null && fp.getFaction().getHome() != null) fp.p.teleport(fp.getFaction().getHome());
+			else fp.p.teleport(Utils.spawn);
+
+		} catch (Exception e2) {
+			e2.printStackTrace();
+			e.getPlayer().kickPlayer("§c): Une erreur est survenue lors de la lecture de ton profil Factions ! Contacte un Membre du Staff");
+		}
 	}
 
 	@EventHandler
@@ -135,29 +134,6 @@ public class BaseEvents implements Listener {
 	public void onRespawn(PlayerRespawnEvent e){ // pas sensé se produire mais bon
 		e.setRespawnLocation(Utils.spawn);
 	}
-
-	@EventHandler
-	public void initEvent(WorldInitEvent e){
-		switch(e.getWorld().getName().toLowerCase()){
-			case "factions":
-				Dimension.OVERWORLD.world = e.getWorld();
-				break;
-			case "factions_nether":
-				Dimension.NETHER.world = e.getWorld();
-				break;
-			case "factions_the_end":
-				Dimension.END.world = e.getWorld();
-				break;
-			default:
-				return;
-		}
-		Main.main.getLogger().info("loaded "+e.getWorld().getName());
-		for(Dimension d : Dimension.values()){
-			if(d.world==null)return;
-		}
-		InternalAPI.onPostEnable();
-	}
-
 
 
 	@EventHandler

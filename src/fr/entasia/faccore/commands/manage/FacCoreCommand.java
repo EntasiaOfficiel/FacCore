@@ -9,7 +9,7 @@ public class FacCoreCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-		if(sender.hasPermission("plugin.skycore")){
+		if(sender.hasPermission("plugin.faccore")){
 			if(args.length==0){
 				sender.sendMessage("§cMet un argument !");
 				showArgs(sender);
@@ -18,7 +18,7 @@ public class FacCoreCommand implements CommandExecutor {
 					try {
 						Main.loadConfigs();
 						sender.sendMessage("§aConfiguration rechargée avec succès !");
-					} catch (Exception e) {
+					} catch (Throwable e) {
 						e.printStackTrace();
 						sender.sendMessage("§cConfiguration rechargée avec erreur ! ( voir console )");
 					}

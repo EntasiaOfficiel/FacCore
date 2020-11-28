@@ -1,5 +1,5 @@
 name: FacCore
-depend: [Libraries]
+depend: [Libraries, Multiverse-Core]
 version: '-1'
 main: fr.entasia.faccore.Main
 api-version: '1.16'

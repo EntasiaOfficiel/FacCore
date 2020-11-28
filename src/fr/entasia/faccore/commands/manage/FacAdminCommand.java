@@ -1,6 +1,5 @@
 package fr.entasia.faccore.commands.manage;
 
-import fr.entasia.apis.other.CodePasser;
 import fr.entasia.faccore.apis.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -29,15 +28,12 @@ public class FacAdminCommand implements CommandExecutor {
 
 
 	private static Faction getIS(CommandSender sender, String[] args) {
-		if (args.length == 1) sender.sendMessage("§cMet un ID d'île !");
+		if (args.length == 1) sender.sendMessage("§cMet un ID de Faction !");
 		else {
-			FacID facID = FacID.parse(args[1]);
-			if (facID == null) sender.sendMessage("§cID d'ile invalide !");
-			else {
-				Faction is = BaseAPI.getIsland(facID);
-				if (is == null) sender.sendMessage("§cIle non existante !");
+
+				Faction is = BaseAPI.getFaction(Integer.parseInt(args[1]));
+				if (is == null) sender.sendMessage("§cFaction non existante !");
 				else return is;
-			}
 		}
 		return null;
 	}
@@ -60,9 +56,12 @@ public class FacAdminCommand implements CommandExecutor {
 							FacPlayer target = InternalAPI.getArgSP(p, args[1], false);
 							if(target==null)return true;
 							p.sendMessage("§8Joueur : §b" + target.name);
-							p.sendMessage("§8îles :");
-							for(FacPlayer ll : target.getIslands()){
-								p.sendMessage("§8- île §b"+ll.is.facID.str()+" §8(§b"+ll.getRank().getName()+"§8)");
+							p.sendMessage("§8Faction :");
+
+							if(target.getFaction() != null){
+								p.sendMessage("§8"+target.getFaction().getName());
+							}else{
+								p.sendMessage("§8Aucune");
 							}
 							p.sendMessage("§7Monnaie : §b" + target.getMoney());
 						}
@@ -78,32 +77,19 @@ public class FacAdminCommand implements CommandExecutor {
 								p.sendMessage("§cTu n'es pas dans un monde Faction !");
 								return true;
 							}
-						} else fac = BaseAPI.getFaction(Integer.valueOf(args[1]));
+						} else fac = BaseAPI.getFaction(Integer.parseInt(args[1]));
 						if (fac == null) p.sendMessage("§cFaction invalide !");
 						else {
-							Faction is = BaseAPI.getIsland(facID);
-							if (is == null) p.sendMessage("§cIle non existante !");
-							else {
 								p.sendMessage("§8Global");
-								p.sendMessage("§7ID : §b"+ facID.str());
-								FacPlayer link = is.getOwner();
-								p.sendMessage("§7Owner UUID : §b"+link.sp.uuid);
-								if(link.sp.p!=null)p.sendMessage("§7Owner Name : §b"+link.sp.p.getName());
+								FacPlayer link = fac.getOwner();
+								p.sendMessage("§7Owner UUID : §b"+fac.getOwner().uuid);
+								if(link.p!=null)p.sendMessage("§7Owner Name : §b"+fac.getOwner().p.getName());
 								p.sendMessage("§7Membres :");
-								for(FacPlayer ll : link.is.getSortedMembers()){
+								for(FacPlayer ll : fac.getSortedMembers()){
 									p.sendMessage("§8- §b"+ll.getName());
 								}
-								p.sendMessage("§7Points purs : §b" + is.getRawpoints());
-								p.sendMessage("§7Malus : §b" + is.getMalus());
-								p.sendMessage("§7Niveau : §b" + is.getLevel());
-								p.sendMessage("§8Dimensions :");
-								p.sendMessage("§7Nether : §b"+is.hasDimension(Dimension.NETHER));
-								p.sendMessage("§7End : §b"+is.hasDimension(Dimension.END));
-								p.sendMessage("§8Autres :");
-								p.sendMessage("§7Extension : §bNiveau "+(is.getExtension()+1)+" §7("+is.getExtension()+"/3)");
-								p.sendMessage("§7Mineurs : §b"+is.autominers.size());
-								p.sendMessage("§7Banque d'île : §b" + is.getBank());
-							}
+								p.sendMessage("§7Banque de Faction : §b" + fac.getBank());
+
 						}
 						break;
 					}
@@ -122,46 +108,26 @@ public class FacAdminCommand implements CommandExecutor {
 						break;
 					}
 
-					case "deleteis":{
-						if(args.length==1)p.sendMessage("§cMet un ID d'île !");
+					case "deletefac":{
+						if(args.length==1)p.sendMessage("§cMet un ID de Faction !");
 						else {
-							FacID facID = FacID.parse(args[1]);
-							if (facID == null) p.sendMessage("§cID d'ile invalide !");
-							else{
-								Faction is = BaseAPI.getIsland(facID);
-								if (is == null) p.sendMessage("§cIle non existante !");
+								Faction is = BaseAPI.getFaction(Integer.parseInt(args[1]));
+								if (is == null) p.sendMessage("§cFaction non existante !");
 								else {
-									BaseAPI.deleteFaction(is, new CodePasser.Arg<Boolean>() {
-										@Override
-										public void run(Boolean err) {
-											if(err)p.sendMessage("§cUne erreur s'est produite lors de la suppression de la faction !");
-											else p.sendMessage("§cîle supprimé avec succès !");
-										}
-									});
+									try {
+										BaseAPI.deleteFaction(is);
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
 								}
-							}
+
 						}
 						break;
 					}
 
 					// TEAM UTILS
 
-					case "setrange":{
-						Faction is = getIS(sender, args);
-						if(is==null)return true;
-						byte range;
-						try{
-							if(args.length==2)throw new NumberFormatException();
-							range = Byte.parseByte(args[2]);
-							if(range<0||range>3)throw new NumberFormatException();
-						}catch(NumberFormatException ignore){
-							p.sendMessage("§cMet un nombre entre 0 et 3 !");
-							return true;
-						}
-						is.setExtension(range);
-						p.sendMessage("§aNouvelle extension de la faction définie à "+range+" !");
-						break;
-					}
+
 					case "tp":{
 						Faction is = getIS(sender, args);
 						if(is==null)return true;
@@ -178,21 +144,13 @@ public class FacAdminCommand implements CommandExecutor {
 							else{
 								FacPlayer target = InternalAPI.getArgSP(sender, args[2], false);
 								if(target!=null){
-									FacPlayer targetLink = target.getIsland(is.facID);
 									switch(args[0]){
 										case "join":{
-											if(targetLink==null){
-												if(is.addMember(target)==null) p.sendMessage("§cUne erreur est survenue !");
-												else p.sendMessage("§aSuccès !");
-											}else p.sendMessage("§cCe joueur est déja membre sur cette île !");
+											p.sendMessage("§cCe joueur est déja membre sur cette Faction !");
 											break;
 										}
 										case "kick":{
-											if(targetLink==null){
-												p.sendMessage("§cCe joueur n'est pas membre sur cette île !");
-												return true;
-											}
-											if(targetLink.removeMember())p.sendMessage("§aSuccès !");
+											if(target.getFaction().getMembers().remove(target))p.sendMessage("§aSuccès !");
 											else p.sendMessage("§cUne erreur est survenue !");
 											break;
 										}
@@ -207,18 +165,12 @@ public class FacAdminCommand implements CommandExecutor {
 										case "setrank":{
 											if(args.length==3)p.sendMessage("§cMet un rôle !");
 											else{
-												if(targetLink==null){
-													p.sendMessage("§cCe joueur n'est pas membre sur cette île !");
-													return true;
-												}
 												try{
 													MemberRank r = MemberRank.valueOf(args[3].toUpperCase());
 													if(r==MemberRank.DEFAULT)p.sendMessage("§cUtilise /is kick pour exclure un membre de la faction !");
 													else{
-														byte ret = targetLink.setRank(r);
-														if(ret==0)p.sendMessage("§aSuccès !");
-														else if(ret==1)p.sendMessage("§cCe joueur est déja chef d'une île !");
-														else p.sendMessage("§cUne erreur est survenue !");
+														target.setRank(r);
+														p.sendMessage("§aSuccès !");
 													}
 												}catch(IllegalArgumentException ignore){
 													p.sendMessage("§cCe rôle n'existe pas ! Liste des rôles :");

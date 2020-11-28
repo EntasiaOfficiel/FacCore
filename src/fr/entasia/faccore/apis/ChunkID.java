@@ -2,9 +2,6 @@ package fr.entasia.faccore.apis;
 
 import fr.entasia.faccore.objs.FacException;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 
 public class ChunkID {
 	public final Dimension dim;

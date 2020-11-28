@@ -1,7 +1,6 @@
 package fr.entasia.faccore.commands.base;
 
 import fr.entasia.apis.other.ChatComponent;
-import fr.entasia.apis.other.CodePasser;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.*;
 import fr.entasia.faccore.invs.FacMenus;
@@ -14,7 +13,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static fr.entasia.faccore.commands.base.FCmdUtils.*;
@@ -30,7 +28,11 @@ public class FacCommand implements CommandExecutor {
 			return true;
 		}
 		if (args.length == 0) {
-			FacMenus.baseIslandOpen(fp);
+			if(fp.getFaction() != null){
+				FacMenus.baseIslandOpen(fp);
+			}else{
+				showHelp(p);
+			}
 			return true;
 		}
 
@@ -307,11 +309,12 @@ public class FacCommand implements CommandExecutor {
 							return true;
 						}
 						if (target == null) return true;
-						FacPlayer targetLink = fac.getMember(target.p.getUniqueId());
-						if (targetLink == null) {
+
+						if (target.getFaction() != fac) {
 							p.sendMessage("§cCe joueur n'est pas membre de la faction !");
 							return true;
 						}
+						FacPlayer targetLink = fac.getMember(target.p.getUniqueId());
 						switch (args[0]) {
 							case "kick": {
 								if (targetLink.getRank().id < fp.getRank().id) {
@@ -512,30 +515,7 @@ public class FacCommand implements CommandExecutor {
 
 
 					case "help": {
-						p.sendMessage("§6Liste des sous-commandes :");
-						p.sendMessage("§bCommandes de bases :");
-						p.sendMessage(new ChatComponent("§e- create").setTextHover("§6pour créer ta faction !").create());
-						p.sendMessage(new ChatComponent("§e- go/home ").setTextHover("§6pour te téléporter à ta faction").create());
-						p.sendMessage(new ChatComponent("§e- setname").setTextHover("§6pour renommer ta faction").create());
-						p.sendMessage(new ChatComponent("§e- chat").setTextHover("§6pour parler avec les membres de la faction").create());
-						p.sendMessage(new ChatComponent("§e- sethome").setTextHover("§6pour redéfinir le spawn de ta faction").create());
-						p.sendMessage(new ChatComponent("§e- top").setTextHover("§6pour voir le top 10 des factions !").create());
-						p.sendMessage(new ChatComponent("§e- help").setTextHover("§6pour voir cette liste. Très surprenant.").create());
-						p.sendMessage("§bCommandes d'équipe :");
-						p.sendMessage(new ChatComponent("§e- team").setTextHover("§6pour voir l'équipe de ta faction").create());
-						p.sendMessage(new ChatComponent("§e- invite").setTextHover("§6pour inviter un joueur dans la faction").create());
-						p.sendMessage(new ChatComponent("§e- kick").setTextHover("§6pour exclure un membre de la faction").create());
-						p.sendMessage(new ChatComponent("§e- promote").setTextHover("§6pour augmenter le grade d'un membre").create());
-						p.sendMessage(new ChatComponent("§e- demote").setTextHover("§6pour diminuer le grade d'un membre").create());
-						p.sendMessage(new ChatComponent("§e- ban").setTextHover("§6pour bannir quelqu'un de la faction").create());
-						p.sendMessage(new ChatComponent("§e- unban").setTextHover("§6pour débannir quelqu'un de la faction").create());
-						p.sendMessage("§bBanque de la faction :");
-						p.sendMessage(new ChatComponent("§e- money/bank").setTextHover("§6pour voir la valeur de la banque de la faction").create());
-						p.sendMessage(new ChatComponent("§e- deposit").setTextHover("§6pour poser de l'argent bien au chaud dans la banque de la faction").create());
-						p.sendMessage(new ChatComponent("§e- withdraw").setTextHover("§6pour récupérer de l'argent de la banque de la faction").create());
-						p.sendMessage("§cCommandes dangereuses :");
-						p.sendMessage(new ChatComponent("§e- setowner").setTextHover("§6pour changer la propriété de la faction").create());
-						p.sendMessage(new ChatComponent("§e- delete").setTextHover("§6pour supprimer la faction").create());
+						showHelp(p);
 						break;
 					}
 					default: {
@@ -547,4 +527,31 @@ public class FacCommand implements CommandExecutor {
 		}
 	return true;
 	}
+
+
+	public static void showHelp(Player p){
+		p.sendMessage("§6Liste des sous-commandes :");
+		p.sendMessage("§bCommandes de bases :");
+		p.sendMessage(new ChatComponent("§e- create").setTextHover("§6pour créer ta faction !").create());
+		p.sendMessage(new ChatComponent("§e- go/home ").setTextHover("§6pour te téléporter à ta faction").create());
+		p.sendMessage(new ChatComponent("§e- setname").setTextHover("§6pour renommer ta faction").create());
+		p.sendMessage(new ChatComponent("§e- chat").setTextHover("§6pour parler avec les membres de la faction").create());
+		p.sendMessage(new ChatComponent("§e- sethome").setTextHover("§6pour redéfinir le spawn de ta faction").create());
+//		p.sendMessage(new ChatComponent("§e- top").setTextHover("§6pour voir le top 10 des factions !").create());
+		p.sendMessage(new ChatComponent("§e- help").setTextHover("§6pour voir cette liste. Très surprenant.").create());
+		p.sendMessage("§bCommandes d'équipe :");
+		p.sendMessage(new ChatComponent("§e- team").setTextHover("§6pour voir l'équipe de ta faction").create());
+		p.sendMessage(new ChatComponent("§e- invite").setTextHover("§6pour inviter un joueur dans la faction").create());
+		p.sendMessage(new ChatComponent("§e- kick").setTextHover("§6pour exclure un membre de la faction").create());
+		p.sendMessage(new ChatComponent("§e- promote").setTextHover("§6pour augmenter le grade d'un membre").create());
+		p.sendMessage(new ChatComponent("§e- demote").setTextHover("§6pour diminuer le grade d'un membre").create());
+		p.sendMessage("§bBanque de la faction :");
+		p.sendMessage(new ChatComponent("§e- money/bank").setTextHover("§6pour voir la valeur de la banque de la faction").create());
+		p.sendMessage(new ChatComponent("§e- deposit").setTextHover("§6pour poser de l'argent bien au chaud dans la banque de la faction").create());
+		p.sendMessage(new ChatComponent("§e- withdraw").setTextHover("§6pour récupérer de l'argent de la banque de la faction").create());
+		p.sendMessage("§cCommandes dangereuses :");
+		p.sendMessage(new ChatComponent("§e- setowner").setTextHover("§6pour changer la propriété de la faction").create());
+		p.sendMessage(new ChatComponent("§e- delete").setTextHover("§6pour supprimer la faction").create());
+	}
+
 }

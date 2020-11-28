@@ -98,9 +98,8 @@ public class BaseAPI {
 		}
 		Faction fac = new Faction(facID, fp);
 
-		Main.sql.fastUpdateUnsafe("INSERT INTO factions (owner) VALUES (?)", fp.uuid);
+		Main.sql.fastUpdateUnsafe("INSERT INTO factions (id) VALUES (?)", facID);
 		Main.sql.fastUpdateUnsafe("UPDATE fac_players SET faction=?, rank=? WHERE uuid=?", facID, MemberRank.CHEF.id, fp.uuid);
-
 		Utils.factionCache.add(fac);
 		return fac;
 	}
@@ -120,7 +119,7 @@ public class BaseAPI {
 		fac.sendTeamMsg("\nTa faction vient d'être supprimée !\n");
 
 		Main.sql.fastUpdateUnsafe("DELETE FROM factions WHERE faction=?", fac.id);
-		Main.sql.fastUpdate("UPDATE sky_players SET faction=null, rank=null WHERE faction=?", fac.id);
+		Main.sql.fastUpdate("UPDATE fac_players SET faction=null, rank=null WHERE faction=?", fac.id);
 	}
 
 	@Deprecated // method pas complète

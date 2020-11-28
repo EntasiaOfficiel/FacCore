@@ -20,11 +20,11 @@ public class FCmdUtils {
 
 	protected static void sendInviteMsg(CommandSender sender, Faction fac){
 		ChatComponent accept = new ChatComponent("§2[§aAccepter§2]");
-		accept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/is accept "+fac.id));
+		accept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f accept "+fac.id));
 		accept.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§aClique pour accepter l'invitation !")));
 
 		ChatComponent deny = new ChatComponent("§4[§cRefuser§4]");
-		deny.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/is deny "+fac.id));
+		deny.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/f deny "+fac.id));
 		deny.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("§cClique pour refuser l'invitation !")));
 
 		sender.sendMessage(accept.append("   ").append(deny).create());
