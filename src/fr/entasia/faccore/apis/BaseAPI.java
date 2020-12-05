@@ -33,9 +33,15 @@ public class BaseAPI {
 	public static Faction getFaction(Location loc){
 		ChunkID cid = new ChunkID(loc.getChunk());
 		for(Faction lf : Utils.factionCache){
-			if(lf.claims.contains(cid)){
-				return lf;
+			Bukkit.broadcastMessage(lf.getName());
+
+			for(ChunkID id : lf.claims){
+				Bukkit.broadcastMessage(String.valueOf(id));
+				if(id.x == cid.x && id.z == cid.z){
+					return lf;
+				}
 			}
+
 		}
 		return null;
 	}

@@ -252,6 +252,42 @@ public class FacCommand implements CommandExecutor {
 						break;
 					}
 
+					case "claim": {
+						if(fp.getRank().id >=2){
+
+							byte returned = fp.getFaction().claim(p.getLocation());
+							if(returned == 1){
+								p.sendMessage("§cCe chunk appartient déjà à votre Faction");
+							}else if(returned == 2){
+								p.sendMessage("§cCe chunk appartient déjà à une autre Faction");
+							}else if(returned == 0){
+								p.sendMessage("§2Vous avez claim ce chunk");
+							}
+
+						}else{
+							fp.p.sendMessage("§cTu n'es pas assez haut gradé pour faire ça !");
+						}
+
+						break;
+					}
+
+					case "unclaim": {
+						if(fp.getRank().id >=2){
+
+							byte returned = fp.getFaction().unclaim(new ChunkID(p.getLocation().getChunk()));
+							if(returned == 1){
+								p.sendMessage("§cCe chunk n'appartient pas à ta Faction");
+							}else if(returned == 0){
+								p.sendMessage("§2Vous avez unclaim ce chunk");
+							}
+
+						}else {
+							fp.p.sendMessage("§cTu n'es pas assez haut gradé pour faire ça !");
+						}
+
+						break;
+					}
+
 					case "calc":
 					case "level":
 					case "leave":

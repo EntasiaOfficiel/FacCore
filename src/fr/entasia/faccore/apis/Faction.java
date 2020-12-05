@@ -5,6 +5,7 @@ import fr.entasia.apis.other.ChatComponent;
 import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
@@ -103,7 +104,7 @@ public class Faction {
 		Dimension dim = Dimension.get(home.getWorld());
 		if(dim==null)return 1;
 
-		long key = Block.getBlockKey(0x7FFFFFF, 255, 0x7FFFFFF);
+		long key = home.toBlockKey();
 		key |= ((long) dim.id << 62); // injected
 
 		Main.sql.fastUpdate("UPDATE factions SET home=? WHERE id=?", key, id);
@@ -146,9 +147,20 @@ public class Faction {
 		return new ArrayList<>(claims);
 	}
 
-	public byte claim(ChunkID cid){
+	public byte claim(Location loc){
+
+
+		ChunkID cid = new ChunkID(loc.getChunk());
+		Bukkit.broadcastMessage(String.valueOf(cid));
 		// TODO POWER CHECK
-		if(claims.contains(cid))return 1;
+		if(claims.contains(cid)){
+			Bukkit.broadcastMessage("Déjà à toi gogole");
+			return 1;
+		}
+
+		if(BaseAPI.getFaction(loc) != null){
+			return 2;
+		}
 
 		claims.add(cid);
 		Main.sql.fastUpdate("INSERT INTO fac_claims (faction, loc) VALUES (?, ?)", id, cid.getKey());
@@ -157,6 +169,7 @@ public class Faction {
 
 	public byte unclaim(ChunkID cid){
 		// TODO POWER
+		Bukkit.broadcastMessage(String.valueOf(cid));
 		if(claims.remove(cid)){
 			Main.sql.fastUpdate("DELETE FROM fac_claims WHERE faction=? AND loc=?", id, cid.getKey());
 			return 0;

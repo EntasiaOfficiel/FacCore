@@ -99,36 +99,6 @@ public class BaseEvents implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public static void antiKill(EntityDamageEvent e) {
-		if (e.getEntity() instanceof Player) {
-			Player p = (Player) e.getEntity();
-			if (e.getFinalDamage() >= p.getHealth()) {
-				e.setCancelled(true);
-				p.sendMessage("§cTu es mort ! ):");
-				for (PotionEffect pe : p.getActivePotionEffects()) {
-					p.removePotionEffect(pe.getType());
-				}
-
-				FacPlayer sp = BaseAPI.getOnlineFP(p);
-				assert sp != null;
-
-				Location loc = Utils.spawn;
-
-				PlayerUtils.reset(p);
-				p.setNoDamageTicks(80); // c'est pas des ticks
-				p.teleport(loc);
-
-				new BukkitRunnable() {
-					@Override
-					public void run() {
-						p.setFireTicks(0);
-						p.setVelocity(new Vector(0, 0, 0));
-					}
-				}.runTask(Main.main);
-			}
-		}
-	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onRespawn(PlayerRespawnEvent e){ // pas sensé se produire mais bon

@@ -156,8 +156,13 @@ public class ProtectionEvents implements Listener {
 					return false;
 				}
 			}
+
+			if(Utils.spawnRegion.containsLocation(b.getLocation()) || Utils.warzone.containsLocation(b.getLocation())){
+				p.sendMessage("§cCette zone est protégée !");
+				return true;
+			}
 		}
-		return true;
+		return false;
 	}
 
 	@EventHandler
