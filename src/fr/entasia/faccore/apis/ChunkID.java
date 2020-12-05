@@ -59,62 +59,11 @@ public class ChunkID {
 	}
 
 	public long getKey(){
-		return getKey(x, z);
-	}
-
-	public static void mainab(String[] za){
-		for(int i=0;i<64-27;i++)System.out.print(" ");
-		for(int i=0;i<27;i++)System.out.print("a");
-		System.out.println();
-
-		long key = Block.getBlockKey(-1, 0, 0);
-		print(key);
-		key = key << 37;
-		key &= ~((long) 0b1 << 63); // zerofill injection
-		print(key);
-		key = key >> 37;
-		print(key);
-
-		System.out.println(Block.getBlockKeyX(key));
-	}
-
-	public static void main(String[] za) {
-		Random r = new Random();
-		for(int i=0;i<Integer.MAX_VALUE;i++){
-			if(!test(r.nextInt(10000)-5000, r.nextInt(10000)-5000))throw new RuntimeException();
-		}
-	}
-
-	public static void maina(String[] za) {
-		test(-2484, 4008);
-	}
-
-	public static boolean test(int x, int z){
-		long key = getChunkKey(x, z);
-//		print(key);
-
+		long key = getVanillaKey(x, z);
 		int inj = 2;
 		key &= ~((long) 0b11 << 62); // removed
 		key |= ((long) inj << 62); // injected
-
-		inj = (int) (key>>>62);
-		key &= ~((long) 0b11 << 62); // zerofill injection
-		int nx = (int) (key << 33 >> 33);
-
-
-		int nz = (int) (key << 2 >> 33);
-//		print(key);
-
-//		System.out.println(" ");
-//		System.out.println(x+" "+nx);
-//		System.out.println(z+" "+nz);
-		return x==nx&&z==nz;
-	}
-
-	static void print(long key) {
-		String s = Long.toBinaryString(key);
-		while(s.length()<64)s="0"+s;
-		System.out.println(s);
+		return key;
 	}
 
 	private static long getVanillaKey(int x, int z) {
@@ -123,14 +72,5 @@ public class ChunkID {
 				|
 						(((long)z & Integer.MAX_VALUE) << 31);
 	}
-
-	private static long getKey(int x, int z){
-		long key = getVanillaKey(x, z);
-		int inj = 2;
-		key &= ~((long) 0b11 << 62); // removed
-		key |= ((long) inj << 62); // injected
-		return key;
-	}
-
 
 }
