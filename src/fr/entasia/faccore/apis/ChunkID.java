@@ -41,8 +41,16 @@ public class ChunkID {
 	// FONCTIONS A AVOIR
 
 
-	public boolean equals(ChunkID cid){
-		return dim==cid.dim&&x==cid.x&&z==cid.z;
+//	public int hashCode(){
+//		System.out.println("hashCode");
+//		return super.hashCode();
+//	}
+
+	public boolean equals(Object obj){
+		if(obj instanceof ChunkID){
+			ChunkID cid = (ChunkID)obj;
+			return dim==cid.dim&&x==cid.x&&z==cid.z;
+		}else return false;
 	}
 
 	public String toString(){
@@ -60,9 +68,8 @@ public class ChunkID {
 
 	public long getKey(){
 		long key = getVanillaKey(x, z);
-		int inj = 2;
-		key &= ~((long) 0b11 << 62); // removed
-		key |= ((long) inj << 62); // injected
+		key &= ~((long) 0b11 << 62); // zerofill injection
+		key |= ((long) dim.id << 62); // injected
 		return key;
 	}
 

@@ -255,13 +255,15 @@ public class FacCommand implements CommandExecutor {
 					case "claim": {
 						if(fp.getRank().id >=2){
 
-							byte returned = fp.getFaction().claim(p.getLocation());
-							if(returned == 1){
+							byte ret = fp.getFaction().claim(p.getLocation());
+							if(ret == 1){
 								p.sendMessage("§cCe chunk appartient déjà à votre Faction");
-							}else if(returned == 2){
+							}else if(ret == 2){
 								p.sendMessage("§cCe chunk appartient déjà à une autre Faction");
-							}else if(returned == 0){
+							}else if(ret == 0){
 								p.sendMessage("§2Vous avez claim ce chunk");
+							}else if(ret==3){
+								p.sendMessage("§cCette zone est protégée !");
 							}
 
 						}else{
@@ -310,6 +312,8 @@ public class FacCommand implements CommandExecutor {
 							if (fac.invites.contains(target)) {
 								p.sendMessage("§cCe joueur à déja été invité !");
 							} else {
+								fac.invites.add(target);
+								target.invites.add(fac);
 								fac.sendTeamMsg(MemberRank.DEFAULT.getName() + "§3 " + target.name + "§e à été invité dans la faction par " + fp.getName() + "§e !");
 								if (target.isOnline()) {
 									target.p.sendMessage("§eTu as été invité dans la faction " + fac.getGenName() + " par " + fp.name + " !");
@@ -529,6 +533,7 @@ public class FacCommand implements CommandExecutor {
 								p.sendMessage("§cSuppression de la faction en cours...");
 								try {
 									BaseAPI.deleteFaction(fac);
+									p.sendMessage("§aTa faction à été supprimée !");
 								} catch (Exception e) {
 									e.printStackTrace();
 								}

@@ -138,7 +138,7 @@ public class Faction {
 		if (getMember(fp.uuid) != null) return false;
 		members.add(fp);
 		fp.faction = this;
-		Main.sql.fastUpdate("UPDATE fac_players SET faction=?, rank=? WHERE uuid=?", MemberRank.RECRUE.id, id, MemberRank.RECRUE.id, fp.uuid);
+		Main.sql.fastUpdate("UPDATE fac_players SET faction=?, rank=? WHERE uuid=?", id, MemberRank.RECRUE.id, fp.uuid);
 		return true;
 	}
 
@@ -151,11 +151,14 @@ public class Faction {
 
 
 		ChunkID cid = new ChunkID(loc.getChunk());
-		Bukkit.broadcastMessage(String.valueOf(cid));
 		// TODO POWER CHECK
 		if(claims.contains(cid)){
 			Bukkit.broadcastMessage("Déjà à toi gogole");
 			return 1;
+		}
+
+		if(Utils.spawnRegion.containsLocation(loc) || Utils.warzone.containsLocation(loc)){
+			return 3;
 		}
 
 		if(BaseAPI.getFaction(loc) != null){
@@ -169,7 +172,6 @@ public class Faction {
 
 	public byte unclaim(ChunkID cid){
 		// TODO POWER
-		Bukkit.broadcastMessage(String.valueOf(cid));
 		if(claims.remove(cid)){
 			Main.sql.fastUpdate("DELETE FROM fac_claims WHERE faction=? AND loc=?", id, cid.getKey());
 			return 0;

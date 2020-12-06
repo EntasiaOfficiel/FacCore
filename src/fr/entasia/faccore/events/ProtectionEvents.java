@@ -5,6 +5,7 @@ import fr.entasia.apis.regionManager.api.Region;
 import fr.entasia.apis.regionManager.api.RegionManager;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
@@ -57,6 +58,9 @@ public class ProtectionEvents implements Listener {
 			Faction faction = fplayer.getFaction();
 			if (Dimension.isGameWorld(victim.getWorld())){
 
+
+
+
 				Player pDamager = null;
 				if (e.getDamager() instanceof Player) {
 					pDamager = (Player) e.getDamager();
@@ -68,6 +72,10 @@ public class ProtectionEvents implements Listener {
 						pDamager = (Player) damager;
 
 					}
+				}
+
+				if(Utils.spawnRegion.containsLocation(victim.getLocation())){
+					e.setCancelled(true);
 				}
 
 				if(pDamager != null){
@@ -88,6 +96,8 @@ public class ProtectionEvents implements Listener {
 						e.setCancelled(true);
 						pDamager.sendMessage("§cVos factions sont alliées");
 					}
+
+
 
 				}
 			}
@@ -137,15 +147,17 @@ public class ProtectionEvents implements Listener {
 		if(OthersAPI.isMasterEdit(p))return false;
 		if(Dimension.isGameWorld(p.getWorld())) {
 
-			if(RegionManager.getRegionsAt(b.getLocation()).contains(Utils.spawnRegion)) return false;
+			if(Utils.spawnRegion.containsLocation(b.getLocation()) || Utils.warzone.containsLocation(b.getLocation())){
+				p.sendMessage("§cCette zone est protégée !");
+				return true;
+			}
 			Faction fac = BaseAPI.getFaction(b.getLocation());
 			if (fac != null) {
 				FacPlayer fp = BaseAPI.getOnlineFP(p);
-
 				Faction playerFac = fp.getFaction();
 
 
-				if(playerFac == null){
+				if(playerFac != fac){
 					p.sendMessage("§cTu n'es pas membre de cette faction !");
 					return true;
 				} else if (fac.getMembers().contains(fp) && fp.getRank() == MemberRank.RECRUE && isContainer(b)) {
@@ -157,10 +169,9 @@ public class ProtectionEvents implements Listener {
 				}
 			}
 
-			if(Utils.spawnRegion.containsLocation(b.getLocation()) || Utils.warzone.containsLocation(b.getLocation())){
-				p.sendMessage("§cCette zone est protégée !");
-				return true;
-			}
+
+
+			return false;
 		}
 		return false;
 	}
@@ -187,7 +198,7 @@ public class ProtectionEvents implements Listener {
 					case WATER_BUCKET:
 						e.setCancelled(true);
 				}
-				e.setUseInteractedBlock(Event.Result.DENY);
+
 			}
 		}
 	}
@@ -195,10 +206,9 @@ public class ProtectionEvents implements Listener {
 	@EventHandler
 	public void BlockChange(EntityChangeBlockEvent e) {
 		if(Dimension.isGameWorld(e.getBlock().getWorld())){
-			if(RegionManager.getRegionsAt(e.getBlock().getLocation()).contains(Utils.spawnRegion)){
+			if(Utils.spawnRegion.containsLocation(e.getBlock().getLocation())){
 				e.setCancelled(true);
 			}
-
 		}
 	}
 
@@ -217,12 +227,12 @@ public class ProtectionEvents implements Listener {
 					List<Region> regs = RegionManager.getRegionsAt(e.getTo());
 
 					if(regs.contains(Utils.warzone)){
-						title = new Title("§cTu es entré dans la warzone ","§cPrépare toi à te battre !",1,20,1);
+						title = new Title("§cZarzone ","§cAu combat !",1,20,1);
 					}else{
-						title = new Title("§2Tu es entré dans la zone libre ",null,1,20,1);
+						title = new Title("§2Zone libre ",null,1,20,1);
 					}
 				} else {
-					title = new Title("§cTu es entré dans la faction " + to.getName(), null, 1, 20, 1);
+					title = new Title("§c"+to.getName(), null, 1, 20, 1);
 				}
 				e.getPlayer().sendTitle(title);
 			}

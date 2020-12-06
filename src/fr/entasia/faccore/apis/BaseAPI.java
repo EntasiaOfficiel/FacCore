@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 
+import javax.annotation.Nonnull;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
@@ -33,10 +34,9 @@ public class BaseAPI {
 	public static Faction getFaction(Location loc){
 		ChunkID cid = new ChunkID(loc.getChunk());
 		for(Faction lf : Utils.factionCache){
-			Bukkit.broadcastMessage(lf.getName());
+
 
 			for(ChunkID id : lf.claims){
-				Bukkit.broadcastMessage(String.valueOf(id));
 				if(id.x == cid.x && id.z == cid.z){
 					return lf;
 				}
@@ -61,6 +61,7 @@ public class BaseAPI {
 		else return getOnlineFP(p);
 	}
 
+	@Nonnull
 	public static FacPlayer getOnlineFP(Player p){
 		List<MetadataValue> meta = p.getMetadata("FacPlayer");
 		if(meta.size()==0)return null;
@@ -124,7 +125,7 @@ public class BaseAPI {
 		fac.delHolos();
 		fac.sendTeamMsg("\nTa faction vient d'être supprimée !\n");
 
-		Main.sql.fastUpdateUnsafe("DELETE FROM factions WHERE faction=?", fac.id);
+		Main.sql.fastUpdateUnsafe("DELETE FROM factions WHERE id=?", fac.id);
 		Main.sql.fastUpdate("UPDATE fac_players SET faction=null, rank=null WHERE faction=?", fac.id);
 	}
 

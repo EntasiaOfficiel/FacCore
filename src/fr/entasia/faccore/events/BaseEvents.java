@@ -76,23 +76,11 @@ public class BaseEvents implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public static void onDamage(EntityDamageEvent e){
-		if(e.getEntity().getWorld()==Utils.spawn.getWorld()) {
+		if(Utils.spawnRegion.containsLocation(e.getEntity().getLocation())) {
 			e.setCancelled(true);
-			if(e.getEntity() instanceof Player) {
-				if (e.getCause() == EntityDamageEvent.DamageCause.VOID) {
-					e.getEntity().teleport(Utils.spawn);
-				}
-			}
 			return;
 		}
-		if(e.getEntity() instanceof Player){
-			Player p = (Player) e.getEntity();
-			if (e.getCause() == EntityDamageEvent.DamageCause.VOID){
-				e.setCancelled(true);
-				p.teleport(Utils.spawn);
-				p.sendMessage("§cTu y as échappé belle... ne refait pas ca s'il te plait");
-			}else if (e.getCause() == EntityDamageEvent.DamageCause.FALL) e.setDamage(e.getDamage() / 2);
-		}else if(e.getEntity() instanceof Snowman){
+		if(e.getEntity() instanceof Snowman){
 			if(e.getCause()==EntityDamageEvent.DamageCause.MELTING){
 				e.setCancelled(true);
 			}
