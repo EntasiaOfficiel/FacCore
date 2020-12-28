@@ -1,15 +1,12 @@
 package fr.entasia.faccore.events;
 
-import fr.entasia.apis.utils.PlayerUtils;
 import fr.entasia.faccore.Main;
 import fr.entasia.faccore.Utils;
 import fr.entasia.faccore.apis.BaseAPI;
 import fr.entasia.faccore.apis.FacPlayer;
 import fr.entasia.faccore.apis.OthersAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Creature;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,9 +20,6 @@ import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 public class BaseEvents implements Listener {
 
